@@ -15,6 +15,8 @@ erDiagram
   auth_users ||--o{ someday_items : owns
   auth_users ||--o{ weekly_reviews : owns
   weekly_reviews ||--o{ weekly_review_focus_projects : focuses
+  auth_users ||--o{ life_context_documents : owns
+  life_context_documents ||--o{ life_context_entries : contains
 ```
 
 ## 테이블
@@ -29,6 +31,8 @@ erDiagram
 - `weekly_reviews`: 주간 회고.
 - `weekly_review_focus_projects`: 회고에서 선택한 최대 3개 초점 프로젝트.
 - `daily_check_ins`: 하루 한 번 상태 기록.
+- `life_context_documents`: 사용자 장기 컨텍스트 원문. 예: Life-OS 사용자 시드 데이터 v1.
+- `life_context_entries`: 장기 컨텍스트를 섹션별로 나눈 검색/참조 단위.
 
 ## 제약과 인덱스
 

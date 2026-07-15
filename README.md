@@ -83,12 +83,25 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 ## 문서
 
+- [Documentation Index](./docs/00_INDEX.md)
+- [Principles](./docs/02_PRINCIPLES.md)
+- [Domain Model](./docs/03_DOMAIN_MODEL.md)
+- [AI](./docs/06_AI.md)
+- [Roadmap](./docs/07_ROADMAP.md)
+- [Codex Rules](./docs/08_CODEX_RULES.md)
+- [Decision Log](./docs/09_DECISION_LOG.md)
 - [Architecture](./docs/ARCHITECTURE.md)
 - [Database](./docs/DATABASE.md)
 - [Deployment](./docs/DEPLOYMENT.md)
 - [Security](./docs/SECURITY.md)
 - [Free Tier](./docs/FREE_TIER.md)
 - [Decisions](./docs/DECISIONS.md)
+- [Changelog](./docs/10_CHANGELOG.md)
+- [Implementation Status](./docs/11_IMPLEMENTATION_STATUS.md)
+
+## Seed 데이터
+
+개인 사용자 seed와 PRD 원문은 로컬 전용 파일로 관리하며 Git에 올리지 않습니다.
 
 ## 검증 결과
 

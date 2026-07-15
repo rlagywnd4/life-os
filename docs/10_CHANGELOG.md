@@ -13,5 +13,5 @@
 - 주요 클릭/저장 상호작용에 눌림 효과와 제출 중 상태 표시를 추가했다.
 - LifeOS Constitution v1 문서 구조를 추가했다.
 - PRD v0.1의 Mission, Vision, 원칙, 도메인, AI 메모리 모델, 로드맵을 저장소 문서로 분리했다.
-- 공개 seed와 private seed의 경계를 정했다.
-- `docs/LIFEOS_PRD.md`, `docs/09_DECISION_LOG.md`, `docs/11_IMPLEMENTATION_STATUS.md`, `docs/handoffs/README.md`를 추가해 구현 추적 구조를 정리했다.
+- 개인 PRD와 사용자 seed를 로컬 전용 파일로 분리했다.
+- `docs/09_DECISION_LOG.md`, `docs/11_IMPLEMENTATION_STATUS.md`, `docs/handoffs/README.md`를 추가해 구현 추적 구조를 정리했다.

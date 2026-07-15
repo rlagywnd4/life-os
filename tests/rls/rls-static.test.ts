@@ -21,7 +21,9 @@ const userOwnedTables = [
   "daily_check_ins",
   "health_profiles",
   "health_weight_goals",
-  "health_check_ins"
+  "health_check_ins",
+  "life_context_documents",
+  "life_context_entries"
 ];
 
 describe("RLS migration", () => {

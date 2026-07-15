@@ -1,6 +1,6 @@
 # Implementation Status
 
-이 문서는 현재 LifeOS 구현 상태를 기능 단위로 요약한다. 자세한 제품 기준은 [LIFEOS_PRD.md](./LIFEOS_PRD.md), 세부 변경 내역은 [10_CHANGELOG.md](./10_CHANGELOG.md), 작업별 인수인계는 [handoffs](./handoffs/)를 참고한다.
+이 문서는 현재 LifeOS 구현 상태를 기능 단위로 요약한다. 자세한 제품 기준은 로컬 전용 `docs/LIFEOS_PRD.md`, 세부 변경 내역은 [10_CHANGELOG.md](./10_CHANGELOG.md), 작업별 인수인계는 [handoffs](./handoffs/)를 참고한다.
 
 ## 작성 규칙
 

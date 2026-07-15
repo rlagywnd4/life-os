@@ -10,3 +10,10 @@ test-results
 dist
 .DS_Store
 tsconfig.tsbuildinfo
+seed/private/
+seed/*.private.md
+seed/
+docs/LIFEOS_PRD.md
+docs/01_PRODUCT_VISION.md
+scripts/import-life-os-v1.mjs
+.idea/
