@@ -1,0 +1,16 @@
+{
+  "name": "LifeOS",
+  "short_name": "LifeOS",
+  "description": "개인용 인생 운영 웹앱",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#fbfaf7",
+  "theme_color": "#5f7f63",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

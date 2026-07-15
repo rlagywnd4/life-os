@@ -1,0 +1,2 @@
+-- Development-only seed data. Do not apply to production by default.
+-- Create users through Supabase Auth first, then add rows through the app to keep user_id correct.
