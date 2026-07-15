@@ -3,6 +3,7 @@ import { Calendar, FolderKanban, Inbox, Moon } from "lucide-react";
 import { QuickInboxForm } from "@/components/quick-inbox-form";
 import { createClient } from "@/lib/supabase/server";
 import { toDateOnlyInKorea } from "@/lib/dates/korea";
+import { energyLevelLabels, getDisplayLabel } from "@/lib/display-labels";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -49,7 +50,7 @@ export default async function DashboardPage() {
         </article>
         <article className="panel">
           <Calendar className="mb-3 text-berry" />
-          <p className="text-2xl font-bold">{todayPlan.data?.energy_level ?? "미정"}</p>
+          <p className="text-2xl font-bold">{getDisplayLabel(energyLevelLabels, todayPlan.data?.energy_level) || "미정"}</p>
           <p className="muted">오늘 에너지</p>
         </article>
         <article className="panel">

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { toDateOnlyInKorea } from "@/lib/dates/korea";
 import { addActionToToday, completeAction, upsertDailyPlan } from "@/features/today/actions";
 import { getRecommendedCoreActionRange } from "@/lib/domain/rules";
+import { dayModeLabels, energyLevelLabels } from "@/lib/display-labels";
 
 export default async function TodayPage() {
   const supabase = await createClient();
@@ -29,19 +30,13 @@ export default async function TodayPage() {
             <label className="grid gap-1">
               <span className="label">에너지</span>
               <select className="field" name="energyLevel" defaultValue={plan?.energy_level ?? "MEDIUM"}>
-                <option value="LOW">LOW</option>
-                <option value="MEDIUM">MEDIUM</option>
-                <option value="HIGH">HIGH</option>
+                {Object.entries(energyLevelLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
               </select>
             </label>
             <label className="grid gap-1">
               <span className="label">오늘 모드</span>
               <select className="field" name="dayMode" defaultValue={plan?.day_mode ?? "NORMAL"}>
-                <option value="NORMAL">NORMAL</option>
-                <option value="REST">REST</option>
-                <option value="RECOVERY">RECOVERY</option>
-                <option value="TRAVEL">TRAVEL</option>
-                <option value="BUSY">BUSY</option>
+                {Object.entries(dayModeLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
               </select>
             </label>
           </div>

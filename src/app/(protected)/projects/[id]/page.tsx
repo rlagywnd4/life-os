@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createActionItem, updateProjectStatus } from "@/features/projects/actions";
 import { getActionSizeWarning, getActionSpecificityWarning } from "@/lib/domain/rules";
+import { getDisplayLabel, projectStatusLabels } from "@/lib/display-labels";
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -22,7 +23,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     <div className="grid gap-6">
       <header className="panel">
         <div className="mb-3 flex flex-wrap gap-2">
-          <span className="status-pill">{project.status}</span>
+          <span className="status-pill">{getDisplayLabel(projectStatusLabels, project.status)}</span>
         </div>
         <h1 className="text-3xl font-bold">{project.title}</h1>
         <p className="muted mt-3">{project.reason}</p>
@@ -30,7 +31,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         <form className="mt-4 flex flex-wrap gap-2">
           {["ACTIVE", "WAITING", "PAUSED", "COMPLETED", "ABANDONED"].map((status) => (
             <button key={status} className="btn-secondary" formAction={updateProjectStatus.bind(null, project.id, status)}>
-              {status}
+              {getDisplayLabel(projectStatusLabels, status)}
             </button>
           ))}
         </form>

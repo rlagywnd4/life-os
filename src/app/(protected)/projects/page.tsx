@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getDisplayLabel, projectStatusLabels } from "@/lib/display-labels";
 
 const sections = ["ACTIVE", "WAITING", "PAUSED", "COMPLETED", "ABANDONED"];
 
@@ -26,7 +27,7 @@ export default async function ProjectsPage() {
         const list = projects.filter((project) => project.status === status);
         return (
           <section key={status} className="grid gap-3">
-            <h2 className="text-lg font-semibold">{status}</h2>
+            <h2 className="text-lg font-semibold">{getDisplayLabel(projectStatusLabels, status)}</h2>
             <div className="grid gap-3 md:grid-cols-2">
               {list.map((project) => {
                 const projectActions = actions.filter((action) => action.project_id === project.id);

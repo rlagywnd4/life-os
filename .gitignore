@@ -9,3 +9,4 @@ test-results
 .vercel
 dist
 .DS_Store
+tsconfig.tsbuildinfo

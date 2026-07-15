@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { actionStatusLabels, dayModeLabels, energyLevelLabels, getDisplayLabel, weeklyReviewStatusLabels } from "@/lib/display-labels";
 
 export default async function HistoryPage() {
   const supabase = await createClient();
@@ -22,15 +23,15 @@ export default async function HistoryPage() {
       <section className="grid gap-3 lg:grid-cols-3">
         <article className="panel">
           <h2 className="mb-3 font-semibold">최근 행동</h2>
-          {actions.map((action) => <p key={action.id} className="border-b border-line py-2 text-sm">{action.title} · {action.status}</p>)}
+          {actions.map((action) => <p key={action.id} className="border-b border-line py-2 text-sm">{action.title} · {getDisplayLabel(actionStatusLabels, action.status)}</p>)}
         </article>
         <article className="panel">
           <h2 className="mb-3 font-semibold">최근 14일</h2>
-          {plans.map((plan) => <p key={plan.id} className="border-b border-line py-2 text-sm">{plan.plan_date} · {plan.energy_level} · {plan.day_mode}</p>)}
+          {plans.map((plan) => <p key={plan.id} className="border-b border-line py-2 text-sm">{plan.plan_date} · {getDisplayLabel(energyLevelLabels, plan.energy_level)} · {getDisplayLabel(dayModeLabels, plan.day_mode)}</p>)}
         </article>
         <article className="panel">
           <h2 className="mb-3 font-semibold">주간 회고</h2>
-          {reviews.map((review) => <p key={review.id} className="border-b border-line py-2 text-sm">{review.week_start_date} · {review.status}</p>)}
+          {reviews.map((review) => <p key={review.id} className="border-b border-line py-2 text-sm">{review.week_start_date} · {getDisplayLabel(weeklyReviewStatusLabels, review.status)}</p>)}
         </article>
       </section>
     </div>

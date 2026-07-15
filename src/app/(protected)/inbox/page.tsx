@@ -2,6 +2,7 @@ import { Archive, FolderPlus, Trash2 } from "lucide-react";
 import { convertInboxToProject, updateInboxStatus } from "@/features/inbox/actions";
 import { QuickInboxForm } from "@/components/quick-inbox-form";
 import { createClient } from "@/lib/supabase/server";
+import { getDisplayLabel, inboxCategoryLabels, inboxStatusLabels } from "@/lib/display-labels";
 
 const categories = ["SERVICE_IDEA", "STUDY", "CAREER", "EXERCISE", "CONTENT", "HOBBY", "LIFE", "TRAVEL", "PURCHASE", "ETC"];
 
@@ -26,7 +27,7 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
           <input className="field" name="q" placeholder="검색" defaultValue={params.q} />
           <select className="field" name="category" defaultValue={params.category ?? ""}>
             <option value="">전체 카테고리</option>
-            {categories.map((category) => <option key={category} value={category}>{category}</option>)}
+            {categories.map((category) => <option key={category} value={category}>{getDisplayLabel(inboxCategoryLabels, category)}</option>)}
           </select>
           <button className="btn-secondary">필터</button>
         </form>
@@ -36,8 +37,8 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
           <article key={item.id} className="panel grid gap-4">
             <div>
               <div className="mb-2 flex flex-wrap gap-2">
-                <span className="status-pill">{item.category}</span>
-                <span className="status-pill">{item.status}</span>
+                <span className="status-pill">{getDisplayLabel(inboxCategoryLabels, item.category)}</span>
+                <span className="status-pill">{getDisplayLabel(inboxStatusLabels, item.status)}</span>
               </div>
               <h2 className="text-lg font-semibold">{item.title}</h2>
               {item.description ? <p className="muted mt-1">{item.description}</p> : null}
