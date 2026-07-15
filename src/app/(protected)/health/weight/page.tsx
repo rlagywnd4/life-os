@@ -1,4 +1,5 @@
 import { Trash2 } from "lucide-react";
+import { ActionButton } from "@/components/action-button";
 import { HealthTabs } from "@/components/health-tabs";
 import { deleteHealthGoal, saveHealthGoal } from "@/features/health/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -60,8 +61,8 @@ export default async function HealthWeightPage() {
             </label>
             <div className="flex gap-2">
               <label className="btn-secondary"><input className="mr-2" type="checkbox" name="achieved" defaultChecked={goal.achieved} /> 달성</label>
-              <button className="btn-primary">저장</button>
-              <button className="btn-secondary" formAction={deleteHealthGoal.bind(null, goal.id)}><Trash2 size={18} /></button>
+              <ActionButton className="btn-primary" pendingLabel="저장 중">저장</ActionButton>
+              <ActionButton className="btn-secondary" formAction={deleteHealthGoal.bind(null, goal.id)} pendingLabel="삭제 중"><Trash2 size={18} /></ActionButton>
             </div>
           </form>
         ))}
@@ -80,7 +81,7 @@ export default async function HealthWeightPage() {
           <span className="label">순서</span>
           <input className="field" name="sortOrder" type="number" defaultValue={goalRows.length + 1} />
         </label>
-        <button className="btn-primary">목표 추가</button>
+        <ActionButton className="btn-primary" pendingLabel="추가 중">목표 추가</ActionButton>
       </form>
     </div>
   );

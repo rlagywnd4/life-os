@@ -1,3 +1,4 @@
+import { ActionButton } from "@/components/action-button";
 import { HealthTabs } from "@/components/health-tabs";
 import { saveHealthProfile } from "@/features/health/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -120,7 +121,7 @@ export default async function HealthSettingsPage() {
           <p className="muted">푸시 알림은 아직 mock 단계입니다. 설정은 저장하고, 앱 접속 시 예정된 간식을 보여줍니다.</p>
         </section>
 
-        <button className="btn-primary">건강 설정 저장</button>
+        <ActionButton className="btn-primary" pendingLabel="저장 중">건강 설정 저장</ActionButton>
       </form>
     </div>
   );

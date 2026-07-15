@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ActionButton } from "@/components/action-button";
 import { createClient } from "@/lib/supabase/server";
 import { createActionItem, updateProjectStatus } from "@/features/projects/actions";
 import { getActionSizeWarning, getActionSpecificityWarning } from "@/lib/domain/rules";
@@ -30,9 +31,9 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         <p className="mt-3 text-sm text-ink/80">{project.desired_outcome}</p>
         <form className="mt-4 flex flex-wrap gap-2">
           {["ACTIVE", "WAITING", "PAUSED", "COMPLETED", "ABANDONED"].map((status) => (
-            <button key={status} className="btn-secondary" formAction={updateProjectStatus.bind(null, project.id, status)}>
+            <ActionButton key={status} className="btn-secondary" formAction={updateProjectStatus.bind(null, project.id, status)} pendingLabel="변경 중">
               {getDisplayLabel(projectStatusLabels, status)}
-            </button>
+            </ActionButton>
           ))}
         </form>
       </header>
@@ -45,7 +46,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <input className="field" name="title" placeholder="30분 안에 시작하고 끝낼 수 있는 행동" required />
             <textarea className="field min-h-20" name="description" placeholder="메모" />
             <input className="field" name="estimatedMinutes" type="number" min="1" defaultValue="30" aria-label="예상 분" />
-            <button className="btn-primary">행동 저장</button>
+            <ActionButton className="btn-primary" pendingLabel="저장 중">행동 저장</ActionButton>
           </form>
         </section>
       ) : null}

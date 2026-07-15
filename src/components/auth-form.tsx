@@ -79,8 +79,15 @@ export function AuthForm({ mode }: { mode: Mode }) {
           />
         </label>
       ) : null}
-      <button className="btn-primary" disabled={loading}>
-        {loading ? "처리 중" : title}
+      <button className="btn-primary" disabled={loading} aria-busy={loading}>
+        {loading ? (
+          <>
+            <span className="btn-spinner" aria-hidden="true" />
+            처리 중
+          </>
+        ) : (
+          title
+        )}
       </button>
       {message ? <p className="muted" role="status">{message}</p> : null}
     </form>
