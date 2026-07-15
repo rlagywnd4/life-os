@@ -8,6 +8,7 @@ import {
 } from "@/lib/domain/rules";
 import { getKoreanWeekStart, toDateOnlyInKorea } from "@/lib/dates/korea";
 import { actionSchema, inboxSchema } from "@/lib/validation/schemas";
+import { calculateHealthAdherence, generateHealthFeedback } from "@/lib/domain/health";
 
 describe("LifeOS domain rules", () => {
   it("warns when an action is larger than the recommended 30 minutes", () => {
@@ -48,5 +49,40 @@ describe("LifeOS domain rules", () => {
   it("validates forms with zod", () => {
     expect(inboxSchema.safeParse({ title: "", category: "ETC" }).success).toBe(false);
     expect(actionSchema.safeParse({ projectId: crypto.randomUUID(), title: "20분 걷기", estimatedMinutes: 20 }).success).toBe(true);
+  });
+});
+
+describe("LifeOS health rules", () => {
+  it("does not treat missing days as failures in health adherence", () => {
+    const rows = calculateHealthAdherence(
+      [
+        {
+          check_in_date: "2026-07-13",
+          weight_kg: 72,
+          steps: null,
+          brisk_walk_status: "DONE",
+          planned_snack_done: true,
+          dinner_overeating: false,
+          exercise_completion: "NOT_DONE",
+          low_energy_mode: false
+        }
+      ],
+      { snack_weekdays: [1, 2, 3, 4, 5] },
+      new Date("2026-07-15T12:00:00+09:00")
+    );
+
+    expect(rows.find((row) => row.key === "weight")).toMatchObject({ done: 1, planned: 1, rate: 100 });
+    expect(rows.find((row) => row.key === "steps")).toMatchObject({ done: 0, planned: 1, rate: 0 });
+  });
+
+  it("returns data none when no planned health records exist", () => {
+    const rows = calculateHealthAdherence([], null, new Date("2026-07-15T12:00:00+09:00"));
+    expect(rows.every((row) => row.rate === null)).toBe(true);
+  });
+
+  it("generates non-punitive health feedback", () => {
+    const feedback = generateHealthFeedback([], null, new Date("2026-07-15T12:00:00+09:00"));
+    expect(feedback).toContain("단정");
+    expect(feedback).not.toContain("실패");
   });
 });

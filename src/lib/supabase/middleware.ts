@@ -7,6 +7,7 @@ const protectedPrefixes = [
   "/inbox",
   "/projects",
   "/today",
+  "/health",
   "/weekly-review",
   "/someday",
   "/history",

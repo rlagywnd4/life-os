@@ -158,6 +158,82 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["weekly_reviews"]["Row"]>;
         Relationships: [];
       };
+      health_profiles: {
+        Row: {
+          id: string;
+          user_id: string;
+          height_cm: number | null;
+          birth_year: number | null;
+          current_weight_kg: number;
+          target_weight_kg: number;
+          goal_description: string | null;
+          activity_level: string | null;
+          usual_weigh_in_time: string | null;
+          weekly_loss_rate_kg: number;
+          weekday_brisk_walk_minutes: number;
+          low_energy_walk_minutes: number;
+          snack_reminder_enabled: boolean;
+          snack_reminder_time: string;
+          snack_weekdays: number[];
+          default_snack_name: string;
+          default_snack_note: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["health_profiles"]["Row"]> & {
+          current_weight_kg: number;
+          target_weight_kg: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["health_profiles"]["Row"]>;
+        Relationships: [];
+      };
+      health_weight_goals: {
+        Row: {
+          id: string;
+          user_id: string;
+          target_weight_kg: number;
+          goal_name: string;
+          sort_order: number;
+          achieved: boolean;
+          achieved_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["health_weight_goals"]["Row"]> & {
+          target_weight_kg: number;
+          goal_name: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["health_weight_goals"]["Row"]>;
+        Relationships: [];
+      };
+      health_check_ins: {
+        Row: {
+          id: string;
+          user_id: string;
+          check_in_date: string;
+          weight_kg: number | null;
+          steps: number | null;
+          brisk_walk_status: string;
+          planned_snack_done: boolean | null;
+          unplanned_snack: boolean | null;
+          dinner_overeating: boolean | null;
+          free_meal: boolean | null;
+          alcohol: boolean | null;
+          exercise_completion: string;
+          sleep_hours: number | null;
+          condition_level: string | null;
+          stress_level: string | null;
+          low_energy_mode: boolean;
+          note: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["health_check_ins"]["Row"]> & {
+          check_in_date: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["health_check_ins"]["Row"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

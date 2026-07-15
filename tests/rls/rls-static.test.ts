@@ -1,8 +1,13 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const sql = readFileSync(join(process.cwd(), "supabase/migrations/202607150001_initial_schema.sql"), "utf8");
+const migrationDir = join(process.cwd(), "supabase/migrations");
+const sql = readdirSync(migrationDir)
+  .filter((file) => file.endsWith(".sql"))
+  .sort()
+  .map((file) => readFileSync(join(migrationDir, file), "utf8"))
+  .join("\n");
 
 const userOwnedTables = [
   "inbox_items",
@@ -13,7 +18,10 @@ const userOwnedTables = [
   "someday_items",
   "weekly_reviews",
   "weekly_review_focus_projects",
-  "daily_check_ins"
+  "daily_check_ins",
+  "health_profiles",
+  "health_weight_goals",
+  "health_check_ins"
 ];
 
 describe("RLS migration", () => {

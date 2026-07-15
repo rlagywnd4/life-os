@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { CalendarDays, FolderKanban, History, Inbox, LayoutDashboard, Settings, Sparkles } from "lucide-react";
+import { CalendarDays, FolderKanban, HeartPulse, History, Inbox, LayoutDashboard, Settings, Sparkles } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 
 const nav = [
   { href: "/dashboard", label: "대시보드", icon: LayoutDashboard },
+  { href: "/health", label: "건강", icon: HeartPulse },
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/projects", label: "프로젝트", icon: FolderKanban },
   { href: "/today", label: "오늘", icon: CalendarDays },
