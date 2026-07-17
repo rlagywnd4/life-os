@@ -1,0 +1,40 @@
+# Git Convention
+
+LifeOS는 한 명이 사용하는 서비스이므로 Git 절차를 최소화한다. 기능 변경은 사용자가 직접 결과를 확인한 뒤 병합하고, 확인이 불필요한 작은 유지보수는 빠르게 기록한다.
+
+## 기능 작업
+
+1. 최신 `main`에서 `codex/<type>-<short-description>` 브랜치를 만든다. 예: `codex/feat-weekly-summary`.
+2. 하나의 PR에는 하나의 사용자 가치 또는 문제 해결만 담는다. 그 기능에 필수인 코드, 테스트, 문서, migration은 함께 넣고 독립적인 리팩터링·의존성 갱신은 분리한다.
+3. 최신 `main` 변경이 들어오면 브랜치에 반영하고 필요한 검증을 다시 실행한다.
+4. 사용자 흐름이 바뀌면 Preview 또는 테스트 빌드에서 직접 확인할 수 있게 한다.
+5. 사용자가 기능을 확인하고 병합을 요청하면 Squash merge한다. 병합 브랜치는 삭제한다.
+
+현재 웹앱은 Vercel Preview를 사용한다. Swift 앱으로 전환한 뒤에는 Preview 대신 개발 빌드 또는 TestFlight 같은 테스트 빌드를 제공한다.
+
+## 커밋과 PR
+
+- 브랜치 이름은 영문 소문자와 하이픈만 사용한다.
+- 커밋은 하나의 의도만 담고 `<type>: <English summary>` 형식으로 작성한다.
+- 허용 type은 `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`다.
+- PR 제목은 `[type] 한국어 요약` 형식으로 작성한다.
+- PR 본문은 한국어로 작성하고 작업 목표와 사용자 변화, 직접 확인 방법, 테스트·빌드 결과, 데이터·배포 영향, 남은 제한 사항을 포함한다.
+- `main`의 Squash 커밋은 `<type>: <English summary> (#<PR number>)` 형식으로 남긴다.
+
+## 직접 커밋
+
+문서 오탈자, 포맷, 내부 기록처럼 사용자 확인이 불필요하고 배포 위험이 낮은 변경은 PR 없이 `main`에 직접 커밋할 수 있다. 기능, 인증·권한, 데이터 구조, 의존성, CI, 배포 설정 변경은 직접 커밋하지 않는다.
+
+## 검증과 복구
+
+- 기능 PR은 타입 검사, 테스트, 프로덕션 빌드를 통과해야 한다. 문서 전용 PR은 내용·링크·형식을 확인한다.
+- 구현 중이거나 결정·검증이 남았을 때만 Draft PR을 사용한다. 정상 완료된 기능은 Ready for review PR로 게시한다.
+- `main`에는 force push하지 않는다. 문제가 생기면 revert 또는 긴급 수정 커밋으로 복구한다.
+- 데이터 구조 변경은 기존 migration을 고치거나 삭제하지 않고, 필요하면 보정 migration을 새로 추가한다.
+
+## GitHub 인증 자동화
+
+- 원격 저장소는 SSH를 사용해 push한다.
+- PR 생성·조회·병합처럼 GitHub API가 필요한 작업은 `scripts/gh-lifeos`를 사용한다.
+- 이 도구는 Mac 키체인의 `lifeos-github-app-private-key`와 로컬 Git 설정의 App ID를 사용해 `life-os` 전용 GitHub App 설치 토큰을 필요할 때마다 새로 발급한다.
+- 비공개 키, App 토큰, 로컬 Git 설정은 저장소에 커밋하지 않는다. App은 `life-os` 저장소에만 설치하고 코드·PR 권한만 가진다.

@@ -39,7 +39,7 @@ PRD Impact:
 
 ## 2026-07-17 - 검증 완료 작업은 한국어 Draft PR로 자동 게시
 
-Status: Accepted
+Status: Superseded
 Scope: Engineering / Process
 
 Context:
@@ -73,6 +73,84 @@ Impact:
 PRD Impact:
 
 - 없음. Codex 작업 전달과 변경 추적 방식에 관한 운영 결정이다.
+
+## 2026-07-17 - 기능 인수 확인 중심의 Git 컨벤션
+
+Status: Accepted
+Scope: Engineering / Process
+
+Context:
+
+- LifeOS는 현재 한 명이 사용하는 개인 서비스이며, 사용자는 코드 리뷰보다 구현된 기능을 직접 확인하고 병합 여부를 결정하기를 원한다.
+- 모든 변경에 PR을 강제하면 단순 유지보수에도 불필요한 절차가 생기지만, 사용자 기능을 확인하기 전에 `main`에 반영하면 배포 기준이 흐려진다.
+- 현재 웹앱은 Vercel Preview를 제공하고, 이후 Swift 앱에서도 테스트 빌드로 같은 인수 확인 흐름을 유지할 수 있어야 한다.
+
+Decision:
+
+- 사용자 기능과 위험도가 높은 변경은 기능 단위 PR로 만들고, 사용자가 Preview 또는 테스트 빌드에서 직접 확인한 뒤 요청하면 Squash merge한다.
+- 단순 문서·포맷·내부 기록처럼 사용자 확인이 불필요한 작은 유지보수는 `main`에 직접 커밋할 수 있다.
+- 브랜치와 커밋은 영문 Conventional Commit 형식을 사용하고, PR 제목과 본문은 한국어로 작성한다.
+- `main`의 최종 Squash 커밋에는 PR 번호를 남기고, 병합한 작업 브랜치는 삭제한다.
+- `main`에는 force push하지 않으며, 장애는 revert 또는 긴급 수정으로 복구한다.
+
+Rationale:
+
+- PR을 코드 검토 절차가 아니라 기능 인수 확인과 변경 기록으로 사용하면 한 명의 사용자도 배포 전 결과를 직접 판단할 수 있다.
+- Preview와 테스트 빌드라는 결과물 중심 기준은 웹앱에서 Swift 앱으로 전환해도 유지된다.
+- 직접 커밋 예외를 작은 유지보수로 제한하면 필요한 통제와 작업 속도를 함께 유지할 수 있다.
+
+Alternatives:
+
+- 모든 변경에 PR을 강제하는 방식은 기록은 촘촘하지만 개인 프로젝트의 작은 유지보수에는 과도하다.
+- 모든 변경을 `main`에 직접 반영하는 방식은 기능 확인과 배포 이력이 섞여 되돌리기와 추적이 어려워 제외했다.
+- 모든 PR을 Draft로 게시하는 기존 방식은 완료된 기능에 사용자가 추가 상태 변경을 해야 하므로 대체했다.
+
+Impact:
+
+- 기능 PR은 Ready for review 상태로 사용자 확인용 결과물과 테스트 정보를 제공한다.
+- 병합 전에는 최신 `main` 기준 검증을 다시 수행하고, 병합 뒤에는 배포 상태와 핵심 흐름을 확인한다.
+- GitHub PR 템플릿을 사용해 사용자 확인 항목을 일관되게 기록한다.
+
+PRD Impact:
+
+- 없음. 제품 요구사항이 아닌 저장소 작업·배포 운영 방식이다.
+
+## 2026-07-17 - 저장소 전용 GitHub App 인증 자동화
+
+Status: Accepted
+Scope: Engineering / Security / Process
+
+Context:
+
+- GitHub CLI의 사용자 토큰이 무효화되면 Codex가 push 이후 PR을 자동 게시할 수 없고, 사용자가 매번 재인증해야 한다.
+- 개인 토큰을 저장소나 환경 파일에 장기 보관하는 방식은 유출 범위가 넓고 자동 갱신할 수 없다.
+
+Decision:
+
+- Git push는 계정에 등록한 Mac SSH 키를 사용한다.
+- PR 생성·조회·병합은 `life-os` 저장소에만 설치한 `LifeOS Codex Automation` GitHub App의 설치 토큰을 사용한다.
+- App 비공개 키는 Mac 키체인에만 보관하고, 저장소의 `scripts/gh-lifeos`는 필요할 때마다 짧은 수명의 토큰을 발급해 `gh`에 전달한다.
+- App 권한은 코드와 Pull Request 읽기·쓰기로 제한하고, webhook과 전체 저장소 접근은 사용하지 않는다.
+
+Rationale:
+
+- SSH는 사용자 토큰 만료와 무관하게 Git 전송을 수행한다.
+- App 설치 토큰은 짧게 유지되지만 비공개 키로 자동 발급되므로 사용자 재로그인 없이 GitHub API 작업을 수행할 수 있다.
+- 키체인·저장소 제한·최소 권한 조합은 자동화와 키 유출 방지 사이의 균형을 맞춘다.
+
+Alternatives:
+
+- GitHub CLI OAuth 토큰을 다시 로그인해 사용하는 방식은 간단하지만 무효화 시 동일한 중단이 반복된다.
+- 장기 개인 액세스 토큰을 환경 변수나 파일에 저장하는 방식은 갱신 부담과 노출 범위가 커 제외했다.
+
+Impact:
+
+- 이후 Codex는 `scripts/gh-lifeos`로 PR 자동화 작업을 수행한다.
+- 새 Mac 또는 새 클론에는 GitHub App 키를 다시 키체인에 저장하고 로컬 App ID 설정을 해야 한다.
+
+PRD Impact:
+
+- 없음. 저장소 운영 인증 방식 변경이다.
 
 ## 2026-07-17 - 검증된 기존 스키마만 최초 migration history로 복구
 
