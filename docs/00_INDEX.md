@@ -10,6 +10,7 @@ LifeOS 문서는 제품 기준, 구현 기준, 운영 기준을 분리한다. �
 - [AI](./06_AI.md): AI 역할, 금지 사항, 메모리 모델.
 - [Roadmap](./07_ROADMAP.md): 단계별 구현 범위.
 - [Codex Rules](./08_CODEX_RULES.md): 구현 전후 작업 규칙.
+- [Git Convention](./12_GIT_CONVENTION.md): 기능 PR, 커밋, 병합과 복구의 저장소 운영 기준.
 
 ## Engineering Docs
 
