@@ -1,0 +1,68 @@
+name: LifeOS
+
+options:
+  bundleIdPrefix: com.rlagywnd4
+  deploymentTarget:
+    iOS: "18.0"
+    macOS: "15.0"
+  createIntermediateGroups: true
+
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift.git
+    exactVersion: 2.46.0
+
+targets:
+  LifeOS:
+    type: application
+    platform: auto
+    supportedDestinations:
+      - iOS
+      - macOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rlagywnd4.lifeos
+        PRODUCT_NAME: LifeOS
+        SWIFT_VERSION: "6.0"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: LifeOS
+        INFOPLIST_KEY_SupabaseURL: "$(SUPABASE_URL)"
+        INFOPLIST_KEY_SupabasePublishableKey: "$(SUPABASE_PUBLISHABLE_KEY)"
+        ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+    configFiles:
+      Debug: Configuration/Debug.xcconfig
+      Release: Configuration/Release.xcconfig
+    dependencies:
+      - package: Supabase
+        product: Supabase
+
+  LifeOSTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: LifeOS
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST[sdk=macosx*]: "$(BUILT_PRODUCTS_DIR)/LifeOS.app/Contents/MacOS/LifeOS"
+        BUNDLE_LOADER[sdk=macosx*]: "$(TEST_HOST)"
+
+schemes:
+  LifeOS:
+    build:
+      targets:
+        LifeOS: all
+        LifeOSTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - LifeOSTests

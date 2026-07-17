@@ -37,6 +37,47 @@ PRD Impact:
 - PRD 반영 필요 여부.
 ```
 
+## 2026-07-18 - 네이티브 V1은 공용 SwiftUI와 기존 Supabase를 직접 사용
+
+Status: Accepted
+Scope: Product / Engineering / Data / UX / Security
+
+Context:
+
+- LifeOS는 개인이 iPhone과 Mac에서 사용하는 도구이며, 두 기기 사이의 최신 데이터를 기존 Supabase로 공유해야 한다.
+- 오프라인 우선, SwiftData, 유료 iCloud 동기화는 현재 V1 요구사항이 아니다.
+- 첫 전환 범위는 전체 웹앱 복제가 아니라 로그인 후 기존 Inbox를 빠르게 확인하는 세로 흐름이다.
+
+Decision:
+
+- iOS 18과 macOS 15를 지원하는 하나의 SwiftUI 공용 앱을 만든다. Mac은 사이드바/상세 화면, iPhone은 목록 중심 탐색을 사용한다.
+- 앱은 `supabase-swift`로 기존 Supabase Auth와 Data API에 직접 연결한다. Supabase는 계속 단일 원본 데이터와 기기 간 동기화 계층이다.
+- 첫 구현은 이메일·비밀번호 로그인과 본인 `UNREVIEWED` Inbox 조회만 포함한다. 회원가입, 비밀번호 재설정, Inbox 변경, 검색, 실시간 갱신은 다음 범위로 남긴다.
+- URL과 publishable key는 추적하지 않는 Xcode 설정 파일에서만 읽는다. service role key는 앱에 넣지 않으며, 기존 RLS를 데이터 격리 기준으로 유지한다.
+- 생성된 Xcode 프로젝트와 의존성 잠금 파일을 저장소에 포함하고, XcodeGen 설정 파일을 그 원본으로 함께 관리한다.
+
+Rationale:
+
+- 하나의 모델과 기능 코드를 공유하면서도 각 기기의 탐색 밀도에 맞는 UI를 제공할 수 있다.
+- 이미 운영 중인 Supabase 인증·RLS·데이터 구조를 재사용하면 새 동기화 계층이나 데이터 이전 없이 두 기기가 같은 내용을 볼 수 있다.
+- 비밀 설정을 저장소에서 분리하면 공개 저장소와 PR 기록에 개인 연결 정보가 남지 않는다.
+
+Alternatives:
+
+- WKWebView로 웹앱을 감싸는 방식은 네이티브 화면 구조와 이후 기기 기능 통합의 기반이 되지 않아 선택하지 않았다.
+- SwiftData와 CloudKit을 원본으로 삼는 방식은 오프라인 우선·iCloud 동기화를 지금 도입해야 하므로 제외했다.
+- 서비스 역할 키를 네이티브 앱에 넣는 방식은 모든 사용자 데이터 접근 권한을 노출하므로 제외했다.
+
+Impact:
+
+- 기존 웹, Supabase 데이터베이스, API 계약은 변경하지 않는다.
+- 네이티브 앱은 기존 `inbox_items`의 RLS 정책을 그대로 적용받는다.
+- 실제 기기 실행 전에는 개인 로컬 설정에 Supabase URL과 publishable key를 넣고 iPhone 서명을 설정해야 한다.
+
+PRD Impact:
+
+- 없음. PRD의 방향을 바꾸지 않고 V1의 구현 경로를 구체화한 결정이다.
+
 ## 2026-07-17 - 네이티브 AI는 V1 이후 생각 정리 기능으로 분리
 
 Status: Accepted
