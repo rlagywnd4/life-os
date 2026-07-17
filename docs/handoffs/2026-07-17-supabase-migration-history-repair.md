@@ -50,16 +50,16 @@
 
 ## 실제 사용 후 확인해야 할 사항
 
-- 수동 복구 실행에서 `202607150003`, `202607160001`만 pending으로 표시되는지 확인한다.
-- DB 적용 후 `action_items.parent_action_id`가 API 스키마에 노출되는지 확인한다.
-- 일반 `main` push에서 repair 없이 migration 단계가 성공하는지 확인한다.
+- 수동 복구 실행 `29583216409`에서 `202607150003`, `202607160001`만 pending으로 표시되고 실제 적용됐다.
+- DB 적용 후 `action_items.parent_action_id`가 UUID 컬럼으로 API 스키마에 노출됨을 확인했다.
+- repair 옵션이 없는 일반 실행 `29583512241`에서 dry-run과 apply가 모두 `Remote database is up to date`로 성공했다.
 
 ## 남은 문제
 
 - Vercel Production Deployment Check 등록 여부를 별도로 확인해야 한다.
-- 로그인된 사용자 기준 계층형 활동 생성, 이동, 접기/펼치기 기능을 운영 환경에서 확인해야 한다.
+- GitHub Actions의 `actions/checkout@v4`, `actions/setup-node@v4`가 Node.js 20 deprecation 경고를 출력한다. 현재 실행에는 영향이 없지만 공식 최신 major 검토가 필요하다.
 
 ## 다음 작업 후보
 
-- 최초 복구와 운영 배포 성공 결과를 구현 상태와 handoff에 반영한다.
-- Vercel 운영 URL에서 계층형 활동 핵심 흐름을 스모크 테스트한다.
+- Vercel Production Deployment Check가 `Test and migrate production database`를 실제 승격 조건으로 사용하는지 대시보드에서 확인한다.
+- Supabase CLI와 GitHub 공식 Actions major 버전 갱신을 별도 작업으로 검토한다.

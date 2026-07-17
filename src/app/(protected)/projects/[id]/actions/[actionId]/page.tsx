@@ -174,7 +174,11 @@ export default async function ActionDetailPage({
 
       <section className="panel">
         <h2 className="mb-3 text-lg font-semibold">활동 수정</h2>
-        <form action={updateActionItem} className="grid gap-3">
+        <form
+          key={action.updated_at}
+          action={updateActionItem}
+          className="grid gap-3"
+        >
           <input type="hidden" name="actionId" value={action.id} />
           <input type="hidden" name="projectId" value={project.id} />
           <label className="grid gap-1">
