@@ -73,6 +73,8 @@ supabase migration repair --status applied <migration-version>
 
 이 옵션은 기존 데이터베이스를 새로 만들거나 삭제하지 않고 migration history만 맞춘다. 다른 Supabase 프로젝트나 실제 스키마가 다른 환경에서는 선택하지 않는다. 최초 복구가 성공한 뒤에는 일반 `main` push 경로만 사용한다.
 
+LifeOS 프로덕션은 2026-07-17에 이 복구를 완료했다. GitHub Actions 실행 `29583216409`에서 기존 2개 이력을 복구하고 `202607150003`, `202607160001`을 적용했으며, 일반 실행 `29583512241`에서 repair 단계를 건너뛰고 원격 DB가 최신 상태임을 재확인했다. 현재 프로덕션에서는 `repair_legacy_history`를 다시 선택하지 않는다.
+
 ## Vercel
 
 1. Vercel에서 GitHub 저장소를 Import한다.
