@@ -18,6 +18,12 @@ user_id = auth.uid()
 
 브라우저에는 `NEXT_PUBLIC_SUPABASE_ANON_KEY`만 노출한다. `SUPABASE_SERVICE_ROLE_KEY`는 현재 사용하지 않는다. 계정 삭제 같은 서버 전용 작업을 추가할 때만 서버 코드에서 제한적으로 사용하고 이유를 이 문서에 기록한다.
 
+로컬 seed import 스크립트는 service role key를 사용할 수 있다. 이 스크립트는 서버 런타임이나 브라우저 번들에서 호출하지 않는다.
+
+## 민감 Seed 관리
+
+사용자 seed는 `seed/` 하위 로컬 파일에만 둔다. 체중, 의료, 정신 건강, 관계 갈등, 재정, 회사 내부 정보, 위치 기록처럼 민감한 데이터는 Git 추적 대상이 아니다.
+
 ## 세션 처리
 
 `@supabase/ssr`의 브라우저/서버 클라이언트를 분리했다. middleware에서 쿠키 세션을 갱신하고 보호 경로 접근을 제어한다.

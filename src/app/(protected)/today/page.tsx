@@ -1,4 +1,5 @@
 import { CheckCircle2, Plus } from "lucide-react";
+import { ActionButton } from "@/components/action-button";
 import { createClient } from "@/lib/supabase/server";
 import { toDateOnlyInKorea } from "@/lib/dates/korea";
 import { addActionToToday, completeAction, upsertDailyPlan } from "@/features/today/actions";
@@ -42,7 +43,7 @@ export default async function TodayPage() {
           </div>
           <textarea className="field min-h-24" name="note" defaultValue={plan?.note ?? ""} placeholder="하루 메모" />
           <input className="field" name="restReason" defaultValue={plan?.rest_reason ?? ""} placeholder="휴식 또는 회복을 선택한 이유" />
-          <button className="btn-primary">오늘 계획 저장</button>
+          <ActionButton className="btn-primary" pendingLabel="저장 중">오늘 계획 저장</ActionButton>
         </form>
         {plan?.day_mode === "REST" || plan?.day_mode === "RECOVERY" ? (
           <p className="mt-4 rounded-md border border-line bg-paper p-3 text-sm font-semibold">
@@ -63,8 +64,8 @@ export default async function TodayPage() {
             <input type="hidden" name="targetDate" value={today} />
             <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="makeCore" /> 핵심</label>
             <div className="flex gap-2">
-              <button className="btn-secondary"><Plus size={18} /> 오늘로</button>
-              <button className="btn-secondary" formAction={completeAction.bind(null, action.id)}><CheckCircle2 size={18} /> 완료</button>
+              <ActionButton className="btn-secondary" pendingLabel="추가 중"><Plus size={18} /> 오늘로</ActionButton>
+              <ActionButton className="btn-secondary" formAction={completeAction.bind(null, action.id)} pendingLabel="완료 중"><CheckCircle2 size={18} /> 완료</ActionButton>
             </div>
           </form>
         ))}

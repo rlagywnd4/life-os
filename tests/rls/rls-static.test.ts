@@ -21,7 +21,9 @@ const userOwnedTables = [
   "daily_check_ins",
   "health_profiles",
   "health_weight_goals",
-  "health_check_ins"
+  "health_check_ins",
+  "life_context_documents",
+  "life_context_entries"
 ];
 
 describe("RLS migration", () => {
@@ -44,5 +46,13 @@ describe("RLS migration", () => {
     expect(sql).toContain("ACTIVE_PROJECT_LIMIT_EXCEEDED");
     expect(sql).toContain("create or replace function public.add_core_action_to_today");
     expect(sql).toContain("CORE_ACTION_LIMIT_EXCEEDED");
+  });
+
+  it("guards action hierarchy ownership, project scope, and cycles", () => {
+    expect(sql).toContain("add column parent_action_id uuid references public.action_items(id)");
+    expect(sql).toContain("create or replace function public.validate_action_hierarchy");
+    expect(sql).toContain("parent_owner_id <> new.user_id");
+    expect(sql).toContain("parent_project_id <> new.project_id");
+    expect(sql).toContain("ACTION_HIERARCHY_CYCLE");
   });
 });

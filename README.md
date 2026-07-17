@@ -21,7 +21,8 @@ LifeOS는 떠오른 생각을 Inbox에 안전하게 모아두고, 주간 리뷰�
 - `/login`, `/signup`, `/forgot-password`, `/reset-password`: 인증
 - `/dashboard`: 빠른 Inbox, 오늘 상태, 프로젝트 요약
 - `/inbox`: 검색, 필터, Someday 이동, 프로젝트 전환
-- `/projects`, `/projects/[id]`: 프로젝트와 작은 행동
+- `/projects`, `/projects/[id]`: 프로젝트와 계층형 활동 트리
+- `/projects/[id]/actions/[actionId]`: 활동 상세, 상위 경로, 편집과 하위 활동 관리
 - `/today`: 에너지/모드/행동 선택
 - `/weekly-review`, `/someday`, `/history`, `/settings`
 
@@ -83,12 +84,25 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 ## 문서
 
+- [Documentation Index](./docs/00_INDEX.md)
+- [Principles](./docs/02_PRINCIPLES.md)
+- [Domain Model](./docs/03_DOMAIN_MODEL.md)
+- [AI](./docs/06_AI.md)
+- [Roadmap](./docs/07_ROADMAP.md)
+- [Codex Rules](./docs/08_CODEX_RULES.md)
+- [Decision Log](./docs/09_DECISION_LOG.md)
 - [Architecture](./docs/ARCHITECTURE.md)
 - [Database](./docs/DATABASE.md)
 - [Deployment](./docs/DEPLOYMENT.md)
 - [Security](./docs/SECURITY.md)
 - [Free Tier](./docs/FREE_TIER.md)
 - [Decisions](./docs/DECISIONS.md)
+- [Changelog](./docs/10_CHANGELOG.md)
+- [Implementation Status](./docs/11_IMPLEMENTATION_STATUS.md)
+
+## Seed 데이터
+
+개인 사용자 seed와 PRD 원문은 로컬 전용 파일로 관리하며 Git에 올리지 않습니다.
 
 ## 검증 결과
 

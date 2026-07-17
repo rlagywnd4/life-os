@@ -63,6 +63,7 @@ export type Database = {
           id: string;
           user_id: string;
           project_id: string;
+          parent_action_id: string | null;
           title: string;
           description: string | null;
           estimated_minutes: number;
@@ -232,6 +233,52 @@ export type Database = {
           check_in_date: string;
         };
         Update: Partial<Database["public"]["Tables"]["health_check_ins"]["Row"]>;
+        Relationships: [];
+      };
+      life_context_documents: {
+        Row: {
+          id: string;
+          user_id: string;
+          version: string;
+          title: string;
+          source_date: string | null;
+          purpose: string | null;
+          privacy_level: string;
+          content_markdown: string;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["life_context_documents"]["Row"]> & {
+          version: string;
+          title: string;
+          content_markdown: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["life_context_documents"]["Row"]>;
+        Relationships: [];
+      };
+      life_context_entries: {
+        Row: {
+          id: string;
+          user_id: string;
+          document_id: string;
+          entry_key: string;
+          title: string;
+          category: string;
+          privacy_level: string;
+          content_markdown: string | null;
+          data: Json;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["life_context_entries"]["Row"]> & {
+          document_id: string;
+          entry_key: string;
+          title: string;
+          category: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["life_context_entries"]["Row"]>;
         Relationships: [];
       };
     };

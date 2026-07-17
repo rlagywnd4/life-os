@@ -20,6 +20,51 @@
 3. `.env.local`과 비밀 키가 `.gitignore`에 포함되어 있는지 확인한다.
 4. main 브랜치에 push한다.
 
+### GitHub Actions 자동 배포
+
+`.github/workflows/test-and-deploy.yml`은 `main` push에서 다음 순서로 프로덕션 변경을 검증하고 데이터베이스를 갱신한다.
+
+1. 의존성 설치.
+2. TypeScript 검사와 단위 테스트.
+3. 애플리케이션 프로덕션 빌드.
+4. Supabase 마이그레이션 dry-run.
+5. Supabase 마이그레이션 적용.
+
+Vercel Git Integration은 같은 `main` push를 자동으로 빌드한다. Vercel Project Settings의 Production Deployment Checks에 GitHub Actions 체크 `Test and migrate production database`를 필수로 등록한다. 그러면 Vercel은 빌드를 만들 수 있지만 이 체크가 통과하기 전에는 프로덕션 도메인으로 승격하지 않는다.
+
+GitHub Actions 빌드가 실패하면 데이터베이스를 변경하지 않는다. 마이그레이션이 실패하면 Deployment Check가 실패하므로 새 Vercel 빌드는 프로덕션에 승격되지 않는다. 데이터베이스 적용 이후 Vercel 빌드가 실패할 가능성에 대비해 프로덕션 마이그레이션은 기존 앱과 호환되는 확장형 변경을 우선하고, 파괴적 변경은 여러 배포로 나눈다.
+
+GitHub 저장소의 `Settings -> Secrets and variables -> Actions`에 다음 값을 등록한다.
+
+Secrets:
+
+- `SUPABASE_ACCESS_TOKEN`: Supabase account access token.
+- `SUPABASE_DB_PASSWORD`: 프로덕션 프로젝트의 Postgres 비밀번호.
+
+Variables:
+
+- `SUPABASE_PROJECT_ID`: Supabase Dashboard URL의 project ref.
+
+Supabase 비밀값은 저장소 파일, Vercel public 환경 변수, PR 본문에 넣지 않는다. CLI 버전은 워크플로에서 고정하고 의도적으로 갱신한다. Vercel 배포는 기존 Git Integration이 담당하므로 GitHub에 Vercel token, org ID, project ID를 중복 등록하지 않는다.
+
+### 최초 마이그레이션 자동화 전 확인
+
+기존 프로덕션 스키마를 Supabase SQL Editor에서 직접 적용했다면 실제 스키마와 `supabase_migrations.schema_migrations` 기록이 다를 수 있다. 자동화를 처음 실행하기 전에 로컬에서 프로덕션 프로젝트를 연결하고 상태를 비교한다.
+
+```bash
+supabase link --project-ref <project-ref>
+supabase migration list
+supabase db push --dry-run
+```
+
+이미 적용된 스키마인데 migration history에만 없는 버전이 있다면 실제 테이블, 타입, 함수와 정책이 해당 migration과 일치하는지 먼저 확인한다. 확인 없이 `migration repair`를 실행하지 않는다. 일치가 확인된 버전만 다음 형태로 기록을 복구한다.
+
+```bash
+supabase migration repair --status applied <migration-version>
+```
+
+초기 정합성을 맞춘 뒤에는 원격 SQL Editor나 Table Editor로 스키마를 직접 변경하지 않고 모든 변경을 `supabase/migrations` 파일과 `main` 배포 워크플로를 통해 적용한다.
+
 ## Vercel
 
 1. Vercel에서 GitHub 저장소를 Import한다.
@@ -30,6 +75,8 @@
 6. Supabase Redirect URL에 Vercel URL 기반 callback/reset 주소를 추가한다.
 7. Vercel에서 재배포한다.
 8. 모바일 브라우저에서 랜딩, 로그인, 대시보드, Today 화면을 확인한다.
+
+Vercel Git Integration이 branch push에서는 Preview, `main` push에서는 Production 빌드를 자동 생성한다. Production 환경 설정에서 `Test and migrate production database` GitHub Actions 체크를 Deployment Check로 추가해 마이그레이션 성공 전 자동 프로덕션 승격을 막는다. GitHub Actions는 Vercel CLI 배포를 별도로 실행하지 않으므로 중복 배포가 없다.
 
 ## 배포 후 검증
 

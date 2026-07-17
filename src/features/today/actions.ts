@@ -53,11 +53,16 @@ export async function addActionToToday(formData: FormData) {
 export async function completeAction(actionId: string) {
   const supabase = await createClient();
   if (!supabase) throw new Error("Supabase 환경 변수가 필요합니다.");
-  const { error } = await supabase
+  const { data: action, error } = await supabase
     .from("action_items")
     .update({ status: "DONE", completed_at: new Date().toISOString() })
-    .eq("id", actionId);
+    .eq("id", actionId)
+    .select("project_id")
+    .single();
   if (error) throw new Error(error.message);
   revalidatePath("/today");
   revalidatePath("/history");
+  revalidatePath("/projects");
+  revalidatePath(`/projects/${action.project_id}`);
+  revalidatePath(`/projects/${action.project_id}/actions/${actionId}`);
 }

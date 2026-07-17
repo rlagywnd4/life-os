@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Dumbbell, Footprints, Moon, Utensils } from "lucide-react";
+import { ActionButton } from "@/components/action-button";
 import { HealthTabs } from "@/components/health-tabs";
 import { saveHealthCheckIn } from "@/features/health/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -146,7 +147,7 @@ export default async function HealthTodayPage() {
         </div>
 
         <textarea className="field min-h-24" name="note" placeholder="짧은 메모" defaultValue={checkIn?.note ?? ""} />
-        <button className="btn-primary">체크인 저장</button>
+        <ActionButton className="btn-primary" pendingLabel="저장 중">체크인 저장</ActionButton>
       </form>
     </div>
   );

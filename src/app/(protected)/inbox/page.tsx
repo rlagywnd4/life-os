@@ -1,4 +1,5 @@
 import { Archive, FolderPlus, Trash2 } from "lucide-react";
+import { ActionButton } from "@/components/action-button";
 import { convertInboxToProject, updateInboxStatus } from "@/features/inbox/actions";
 import { QuickInboxForm } from "@/components/quick-inbox-form";
 import { createClient } from "@/lib/supabase/server";
@@ -62,9 +63,9 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
                   <input type="checkbox" name="activateNow" /> 지금 활성 프로젝트로 시작
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  <button className="btn-primary"><FolderPlus size={18} /> 프로젝트 전환</button>
-                  <button className="btn-secondary" formAction={updateInboxStatus.bind(null, item.id, "SOMEDAY")}><Archive size={18} /> Someday</button>
-                  <button className="btn-secondary" formAction={updateInboxStatus.bind(null, item.id, "DISCARDED")}><Trash2 size={18} /> 폐기</button>
+                  <ActionButton className="btn-primary" pendingLabel="전환 중"><FolderPlus size={18} /> 프로젝트 전환</ActionButton>
+                  <ActionButton className="btn-secondary" formAction={updateInboxStatus.bind(null, item.id, "SOMEDAY")} pendingLabel="이동 중"><Archive size={18} /> Someday</ActionButton>
+                  <ActionButton className="btn-secondary" formAction={updateInboxStatus.bind(null, item.id, "DISCARDED")} pendingLabel="폐기 중"><Trash2 size={18} /> 폐기</ActionButton>
                 </div>
               </form>
             ) : null}
