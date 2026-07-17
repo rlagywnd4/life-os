@@ -28,6 +28,7 @@
 | Weekly Review | Partial | 주간 리뷰 기본 흐름 있음. |
 | Health & Diet MVP | Partial | 프로필, 체크인, 체중 목표, 운동/리포트 화면 기본 구현 있음. 저장/삭제 액션은 클릭/제출 중 피드백을 표시함. 실제 사용 피드백 필요. |
 | Deployment Automation | Partial | main에서 테스트, 앱 빌드, Supabase migration을 자동화함. GitHub Supabase 비밀값, Vercel Production Deployment Check 등록과 최초 원격 migration history 확인 필요. |
+| Codex Delivery Process | Done | 검증 완료 작업은 한국어 커밋으로 push하고 기존 PR을 갱신하거나 한국어 Draft PR을 생성하도록 AGENTS 규칙에 고정함. |
 | AI Memory / Life Graph | Planned | `life_context_*` 저장 구조 초안은 있으나, AI 관계 추천/승인 흐름은 미구현. |
 | Finance / Travel / Content / Relationship | Planned | 문서 기준만 있음. |
 
@@ -39,6 +40,7 @@
 
 ## Recent Handoffs
 
+- [2026-07-17 Korean PR Automation](./handoffs/2026-07-17-korean-pr-automation.md)
 - [2026-07-17 Supabase Deploy Automation](./handoffs/2026-07-17-supabase-deploy-automation.md)
 - [2026-07-16 Action Hierarchy](./handoffs/2026-07-16-action-hierarchy.md)
 - [2026-07-15 Click Interaction Feedback](./handoffs/2026-07-15-click-interaction-feedback.md)

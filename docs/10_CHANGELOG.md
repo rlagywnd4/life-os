@@ -10,6 +10,7 @@
 
 ## 2026-07-17
 
+- 검증이 끝난 Codex 작업을 한국어 커밋과 Draft PR로 자동 게시하고, 기존 PR이 있으면 갱신하는 저장소 운영 규칙을 추가했다.
 - `main` 배포 워크플로가 테스트와 애플리케이션 빌드 후 Supabase 마이그레이션을 dry-run하고 적용하도록 변경했다.
 - Supabase CLI 버전을 고정하고 프로젝트 ref, access token, DB 비밀번호를 GitHub Actions variable/secret으로 주입하도록 구성했다.
 - Vercel Git 자동 배포는 유지하고 GitHub Actions 체크를 Production Deployment Check로 사용해 마이그레이션 성공 전 프로덕션 승격을 막는 운영 절차를 추가했다.
