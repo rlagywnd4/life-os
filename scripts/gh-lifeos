@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+token="$(node "$script_dir/github-app-token.mjs")"
+
+exec env GH_HOST=github.com GH_TOKEN="$token" gh "$@"

@@ -115,6 +115,43 @@ PRD Impact:
 
 - 없음. 제품 요구사항이 아닌 저장소 작업·배포 운영 방식이다.
 
+## 2026-07-17 - 저장소 전용 GitHub App 인증 자동화
+
+Status: Accepted
+Scope: Engineering / Security / Process
+
+Context:
+
+- GitHub CLI의 사용자 토큰이 무효화되면 Codex가 push 이후 PR을 자동 게시할 수 없고, 사용자가 매번 재인증해야 한다.
+- 개인 토큰을 저장소나 환경 파일에 장기 보관하는 방식은 유출 범위가 넓고 자동 갱신할 수 없다.
+
+Decision:
+
+- Git push는 계정에 등록한 Mac SSH 키를 사용한다.
+- PR 생성·조회·병합은 `life-os` 저장소에만 설치한 `LifeOS Codex Automation` GitHub App의 설치 토큰을 사용한다.
+- App 비공개 키는 Mac 키체인에만 보관하고, 저장소의 `scripts/gh-lifeos`는 필요할 때마다 짧은 수명의 토큰을 발급해 `gh`에 전달한다.
+- App 권한은 코드와 Pull Request 읽기·쓰기로 제한하고, webhook과 전체 저장소 접근은 사용하지 않는다.
+
+Rationale:
+
+- SSH는 사용자 토큰 만료와 무관하게 Git 전송을 수행한다.
+- App 설치 토큰은 짧게 유지되지만 비공개 키로 자동 발급되므로 사용자 재로그인 없이 GitHub API 작업을 수행할 수 있다.
+- 키체인·저장소 제한·최소 권한 조합은 자동화와 키 유출 방지 사이의 균형을 맞춘다.
+
+Alternatives:
+
+- GitHub CLI OAuth 토큰을 다시 로그인해 사용하는 방식은 간단하지만 무효화 시 동일한 중단이 반복된다.
+- 장기 개인 액세스 토큰을 환경 변수나 파일에 저장하는 방식은 갱신 부담과 노출 범위가 커 제외했다.
+
+Impact:
+
+- 이후 Codex는 `scripts/gh-lifeos`로 PR 자동화 작업을 수행한다.
+- 새 Mac 또는 새 클론에는 GitHub App 키를 다시 키체인에 저장하고 로컬 App ID 설정을 해야 한다.
+
+PRD Impact:
+
+- 없음. 저장소 운영 인증 방식 변경이다.
+
 ## 2026-07-17 - 검증된 기존 스키마만 최초 migration history로 복구
 
 Status: Accepted

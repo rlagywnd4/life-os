@@ -31,3 +31,10 @@ LifeOS는 한 명이 사용하는 서비스이므로 Git 절차를 최소화한�
 - 구현 중이거나 결정·검증이 남았을 때만 Draft PR을 사용한다. 정상 완료된 기능은 Ready for review PR로 게시한다.
 - `main`에는 force push하지 않는다. 문제가 생기면 revert 또는 긴급 수정 커밋으로 복구한다.
 - 데이터 구조 변경은 기존 migration을 고치거나 삭제하지 않고, 필요하면 보정 migration을 새로 추가한다.
+
+## GitHub 인증 자동화
+
+- 원격 저장소는 SSH를 사용해 push한다.
+- PR 생성·조회·병합처럼 GitHub API가 필요한 작업은 `scripts/gh-lifeos`를 사용한다.
+- 이 도구는 Mac 키체인의 `lifeos-github-app-private-key`와 로컬 Git 설정의 App ID를 사용해 `life-os` 전용 GitHub App 설치 토큰을 필요할 때마다 새로 발급한다.
+- 비공개 키, App 토큰, 로컬 Git 설정은 저장소에 커밋하지 않는다. App은 `life-os` 저장소에만 설치하고 코드·PR 권한만 가진다.
