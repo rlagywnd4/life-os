@@ -29,4 +29,24 @@ describe("production deployment workflow", () => {
     expect(workflow).not.toContain("secrets.VERCEL_TOKEN");
     expect(workflow).not.toContain("vercel deploy");
   });
+
+  it("repairs only the verified legacy migration history on an explicit manual run", () => {
+    const repair = workflow.indexOf(
+      "- name: Repair verified legacy migration history"
+    );
+    const preview = workflow.indexOf("- name: Preview database migrations");
+
+    expect(workflow).toContain("repair_legacy_history:");
+    expect(workflow).toContain(
+      "github.event_name == 'workflow_dispatch' && inputs.repair_legacy_history"
+    );
+    expect(workflow).toContain(
+      "supabase migration repair --status applied 202607150001 202607150002 --yes"
+    );
+    expect(workflow).not.toContain(
+      "migration repair --status applied 202607150003"
+    );
+    expect(repair).toBeGreaterThan(-1);
+    expect(preview).toBeGreaterThan(repair);
+  });
 });

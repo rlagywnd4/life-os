@@ -74,6 +74,42 @@ PRD Impact:
 
 - 없음. Codex 작업 전달과 변경 추적 방식에 관한 운영 결정이다.
 
+## 2026-07-17 - 검증된 기존 스키마만 최초 migration history로 복구
+
+Status: Accepted
+Scope: Engineering / Data
+
+Context:
+
+- 최초 Supabase 자동 배포가 이미 존재하는 `inbox_category` 타입을 다시 만들려다 실패했다.
+- 프로덕션 스키마 일부는 SQL Editor로 적용됐지만 `supabase_migrations.schema_migrations`에는 적용 이력이 없었다.
+- 존재 여부가 확인되지 않은 migration까지 적용 완료로 기록하면 실제 스키마가 누락될 수 있다.
+
+Decision:
+
+- 프로덕션 API 스키마에서 테이블과 RPC 존재가 확인된 `202607150001`, `202607150002`만 기존 적용분으로 인정한다.
+- 명시적인 수동 실행과 `repair_legacy_history` 입력이 있을 때만 두 버전의 migration history를 복구한다.
+- 존재하지 않은 `202607150003`과 `202607160001`은 repair 대상에서 제외하고 일반 `db push`로 적용한다.
+
+Rationale:
+
+- 실제 스키마와 migration history를 분리해 확인하면 중복 DDL 실행과 미적용 스키마 은폐를 함께 막을 수 있다.
+- 수동 boolean 입력은 특수한 최초 복구가 일반 `main` 배포마다 반복되는 것을 막는다.
+
+Alternatives:
+
+- 네 migration을 모두 적용 완료로 기록하는 방식은 아직 존재하지 않는 테이블과 컬럼을 누락시키므로 제외했다.
+- 초기 migration을 모두 idempotent SQL로 다시 작성하는 방식은 이미 운영 중인 스키마 정의를 광범위하게 바꿔야 해 제외했다.
+
+Impact:
+
+- 최초 1회는 수동 workflow dispatch로 이력을 복구하고, 이후에는 기존 자동 배포 흐름을 그대로 사용한다.
+- 다른 프로젝트에서는 스키마 확인 없이 이 옵션을 사용하면 안 된다.
+
+PRD Impact:
+
+- 없음. 기존 프로덕션 DB의 배포 이력을 안전하게 정합화하는 운영 결정이다.
+
 ## 2026-07-17 - DB 마이그레이션을 Vercel 프로덕션 승격 조건으로 사용
 
 Status: Accepted

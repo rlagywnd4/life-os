@@ -65,6 +65,14 @@ supabase migration repair --status applied <migration-version>
 
 초기 정합성을 맞춘 뒤에는 원격 SQL Editor나 Table Editor로 스키마를 직접 변경하지 않고 모든 변경을 `supabase/migrations` 파일과 `main` 배포 워크플로를 통해 적용한다.
 
+### LifeOS 최초 원격 이력 복구
+
+2026-07-17 최초 자동 배포에서 프로덕션 DB에는 `202607150001_initial_schema.sql`과 `202607150002_health_module.sql`의 테이블 및 RPC가 존재하지만 migration history에는 두 버전이 없음을 확인했다. `202607150003_life_context_seed_store.sql`의 테이블과 `202607160001_action_hierarchy.sql`의 `parent_action_id` 컬럼은 아직 존재하지 않았다.
+
+이 상태에서만 GitHub의 `Actions -> Test and migrate -> Run workflow`에서 `repair_legacy_history`를 선택해 1회 실행한다. 워크플로는 검증된 `202607150001`, `202607150002`만 적용 완료로 기록한 뒤 dry-run과 `db push`를 실행한다. 그러면 `202607150003`과 `202607160001`은 일반 마이그레이션으로 실제 적용된다.
+
+이 옵션은 기존 데이터베이스를 새로 만들거나 삭제하지 않고 migration history만 맞춘다. 다른 Supabase 프로젝트나 실제 스키마가 다른 환경에서는 선택하지 않는다. 최초 복구가 성공한 뒤에는 일반 `main` push 경로만 사용한다.
+
 ## Vercel
 
 1. Vercel에서 GitHub 저장소를 Import한다.

@@ -10,6 +10,8 @@
 
 ## 2026-07-17
 
+- 기존 프로덕션 스키마와 migration history 불일치를 확인하고, 검증된 초기 스키마와 건강 모듈만 최초 1회 적용 완료로 기록하는 수동 복구 경로를 추가했다.
+- 아직 적용되지 않은 생활 맥락 저장소와 활동 계층 마이그레이션은 history repair에서 제외하고 일반 DB migration으로 적용하도록 했다.
 - 검증이 끝난 Codex 작업을 한국어 커밋과 Draft PR로 자동 게시하고, 기존 PR이 있으면 갱신하는 저장소 운영 규칙을 추가했다.
 - `main` 배포 워크플로가 테스트와 애플리케이션 빌드 후 Supabase 마이그레이션을 dry-run하고 적용하도록 변경했다.
 - Supabase CLI 버전을 고정하고 프로젝트 ref, access token, DB 비밀번호를 GitHub Actions variable/secret으로 주입하도록 구성했다.
