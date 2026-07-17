@@ -21,7 +21,8 @@ LifeOS는 떠오른 생각을 Inbox에 안전하게 모아두고, 주간 리뷰�
 - `/login`, `/signup`, `/forgot-password`, `/reset-password`: 인증
 - `/dashboard`: 빠른 Inbox, 오늘 상태, 프로젝트 요약
 - `/inbox`: 검색, 필터, Someday 이동, 프로젝트 전환
-- `/projects`, `/projects/[id]`: 프로젝트와 작은 행동
+- `/projects`, `/projects/[id]`: 프로젝트와 계층형 활동 트리
+- `/projects/[id]/actions/[actionId]`: 활동 상세, 상위 경로, 편집과 하위 활동 관리
 - `/today`: 에너지/모드/행동 선택
 - `/weekly-review`, `/someday`, `/history`, `/settings`
 

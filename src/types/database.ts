@@ -63,6 +63,7 @@ export type Database = {
           id: string;
           user_id: string;
           project_id: string;
+          parent_action_id: string | null;
           title: string;
           description: string | null;
           estimated_minutes: number;

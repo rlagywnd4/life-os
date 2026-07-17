@@ -16,9 +16,17 @@ export const projectConversionSchema = z.object({
 
 export const actionSchema = z.object({
   projectId: z.string().uuid(),
+  parentActionId: z.preprocess(
+    (value) => (value === "" || value === null ? undefined : value),
+    z.string().uuid().optional()
+  ),
   title: z.string().trim().min(1).max(160),
   description: z.string().trim().max(1000).optional(),
   estimatedMinutes: z.coerce.number().int().positive().max(480).default(30)
+});
+
+export const actionUpdateSchema = actionSchema.extend({
+  actionId: z.string().uuid()
 });
 
 export const dailyPlanSchema = z.object({
