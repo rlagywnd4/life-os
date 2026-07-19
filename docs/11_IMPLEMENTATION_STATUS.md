@@ -27,7 +27,7 @@
 | Today                                     | Partial | 에너지/모드/핵심 행동 선택 흐름 있음. 주요 액션은 클릭/제출 중 피드백을 표시함.                                                                                             |
 | Weekly Review                             | Partial | 주간 리뷰 기본 흐름 있음.                                                                                                                                                   |
 | Health & Diet MVP                         | Partial | 프로필, 체크인, 체중 목표, 운동/리포트 화면 기본 구현 있음. 저장/삭제 액션은 클릭/제출 중 피드백을 표시함. 실제 사용 피드백 필요.                                           |
-| Native App V1                             | Partial | iPhone·Mac 공용 SwiftUI 기반과 Supabase 로그인, `UNREVIEWED` Inbox 읽기 흐름을 구현함. 실제 계정·기기 접속, Inbox 추가·수정·삭제, 검색, 실시간 갱신은 아직 남아 있음.          |
+| Native App V1                             | Partial | iPhone·Mac 공용 SwiftUI 기반과 Supabase 로그인, `UNREVIEWED` Inbox 읽기 흐름을 구현함. 로컬 URL은 Xcode 설정용 표기 형식이 필요하며, 실제 계정·기기 접속, Inbox 추가·수정·삭제, 검색, 실시간 갱신은 아직 남아 있음. |
 | Deployment Automation                     | Partial | GitHub 비밀값 등록, 최초 history 복구, 실제 DB migration, Vercel Production 배포, repair 없는 일반 재실행을 완료함. Vercel Production Deployment Check 등록 여부 확인 필요. |
 | Codex Delivery Process                    | Done    | 기능 PR은 사용자가 Preview 또는 테스트 빌드로 확인한 뒤 병합하며, 영문 Conventional Commit·한국어 PR·Squash merge·안전한 복구와 SSH·GitHub App 인증 자동화를 적용함.  |
 | AI Memory / Life Graph                    | Planned | `life_context_*` 저장 구조 초안은 있으나, AI 관계 추천/승인 흐름은 미구현. 네이티브 생각 정리 AI는 V1 이후 기능으로 분리했다.                                              |

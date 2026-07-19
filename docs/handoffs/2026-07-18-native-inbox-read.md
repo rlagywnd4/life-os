@@ -64,6 +64,11 @@ iPhone과 Mac에서 공용으로 실행되는 LifeOS 네이티브 V1의 첫 세�
 - 개인 Supabase 설정을 의도적으로 저장소에 넣지 않아 실제 계정 접속은 아직 검증하지 않았다.
 - 실제 iPhone 실행에는 Xcode에서 Apple 개발 팀 서명이 필요하다.
 
+## 후속 수정
+
+- 2026-07-19: `Debug.xcconfig`과 `Release.xcconfig`에서 빈 기본값을 먼저 선언하고 마지막에 `Secrets.xcconfig`를 포함하도록 순서를 바꿨다. 이전 순서는 사용자가 입력한 URL과 키를 다시 빈값으로 덮어써 앱이 Supabase URL 설정 오류를 표시했다.
+- 2026-07-19: Xcode의 xcconfig 문법이 `https://` 중 `//` 뒤를 주석으로 처리해 URL을 `https:`로 자르는 것을 확인했다. 예제와 안내를 `https:/$()/프로젝트주소.supabase.co` 형식으로 바꾸고, 앱에서 해당 오류를 구체적으로 안내한다.
+
 ## 다음 작업 후보
 
 1. 실제 계정으로 Mac과 iPhone Inbox 읽기 흐름을 확인한다.

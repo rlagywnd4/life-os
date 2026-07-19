@@ -5,7 +5,7 @@ LifeOS의 iPhone·Mac 공용 SwiftUI 앱이다. 현재 범위는 기존 Supabase
 ## 처음 실행하기
 
 1. `Configuration/Secrets.xcconfig.example`을 `Configuration/Secrets.xcconfig`으로 복사한다.
-2. 기존 Supabase 프로젝트의 URL과 publishable key를 입력한다. 이 파일은 Git에 포함되지 않는다.
+2. 기존 Supabase 프로젝트의 URL과 publishable key를 입력한다. URL은 `https:/$()/프로젝트주소.supabase.co` 형태로 입력한다. Xcode 설정 파일에서 `$()`는 빈 문자열로 바뀌어 앱에는 정상적인 `https://` URL이 전달된다. 이 파일은 Git에 포함되지 않는다.
 3. 프로젝트 디렉터리에서 `xcodegen generate`를 실행한다.
 4. `LifeOS.xcodeproj`를 Xcode로 열어 `LifeOS` 스킴을 Mac 또는 iPhone 시뮬레이터에서 실행한다.
 
