@@ -26,10 +26,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.rlagywnd4.lifeos
         PRODUCT_NAME: LifeOS
         SWIFT_VERSION: "6.0"
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: LifeOS
-        INFOPLIST_KEY_SupabaseURL: "$(SUPABASE_URL)"
-        INFOPLIST_KEY_SupabasePublishableKey: "$(SUPABASE_PUBLISHABLE_KEY)"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Sources/Resources/Info.plist
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
       configs:
         Debug:

@@ -40,6 +40,7 @@
 		59E86585856E4505CB0313E8 /* InboxListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxListView.swift; sourceTree = "<group>"; };
 		7B856AE34114D3F24B789576 /* InboxItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxItem.swift; sourceTree = "<group>"; };
 		A7B67B4E5EECE53252F9B882 /* LifeOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LifeOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0C5C7183B2BCBE3FD0D07B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D802C37E12A6ABA86B78E5BC /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		E007A8CAE95409C79B607928 /* InboxItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxItemTests.swift; sourceTree = "<group>"; };
 		E30CFAE8C8819938931A8C88 /* LifeOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeOSApp.swift; sourceTree = "<group>"; };
@@ -67,6 +68,14 @@
 			path = Tests;
 			sourceTree = "<group>";
 		};
+		3D3C9864F20E337B3C4D8CDC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C0C5C7183B2BCBE3FD0D07B3 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		43C3852FD7B988F8D09F753E /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
@@ -91,6 +100,7 @@
 				EC450F6BB8C01864E411317C /* App */,
 				84E3100BD2F9EFA70AD3D706 /* Core */,
 				5F7159788B72576A88A2A57E /* Features */,
+				3D3C9864F20E337B3C4D8CDC /* Resources */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -276,10 +286,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = LifeOS;
-				INFOPLIST_KEY_SupabasePublishableKey = "$(SUPABASE_PUBLISHABLE_KEY)";
-				INFOPLIST_KEY_SupabaseURL = "$(SUPABASE_URL)";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -442,10 +450,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = LifeOS;
-				INFOPLIST_KEY_SupabasePublishableKey = "$(SUPABASE_PUBLISHABLE_KEY)";
-				INFOPLIST_KEY_SupabaseURL = "$(SUPABASE_URL)";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
