@@ -71,6 +71,7 @@ iPhone과 Mac에서 공용으로 실행되는 LifeOS 네이티브 V1의 첫 세�
 - 2026-07-19: 생성형 Info.plist의 사용자 정의 키가 앱 번들에 포함되지 않는 것을 확인했다. `Sources/Resources/Info.plist`를 명시적으로 사용하도록 바꿔 Supabase URL과 publishable key가 실행 앱에 포함되게 했다.
 - 2026-07-19: 수동 Info.plist에 `CFBundleIdentifier`가 없어 실제 iPhone 설치가 실패하는 것을 확인했다. `CFBundleIdentifier`, 실행 파일명, 패키지 타입, 버전 등 기본 앱 번들 항목을 추가했다.
 - 2026-07-19: 선택적인 `LIFEOS_ACCOUNT_EMAIL`·`LIFEOS_ACCOUNT_PASSWORD` 개인 로컬 설정을 추가했다. 값이 있을 때만 앱에 "내 계정으로 로그인" 버튼을 표시하며, 기존 직접 로그인도 유지한다.
+- 2026-07-19: 로그인 실패 원인을 계정 자격 증명, 이메일 인증, 네트워크, Supabase 키·서버, 요청 제한으로 구분해 표시하고 해당 매핑 단위 테스트를 추가했다.
 
 ## 다음 작업 후보
 
