@@ -26,6 +26,10 @@
     <string>$(SUPABASE_URL)</string>
     <key>SupabasePublishableKey</key>
     <string>$(SUPABASE_PUBLISHABLE_KEY)</string>
+    <key>LifeOSAccountEmail</key>
+    <string>$(LIFEOS_ACCOUNT_EMAIL)</string>
+    <key>LifeOSAccountPassword</key>
+    <string>$(LIFEOS_ACCOUNT_PASSWORD)</string>
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>

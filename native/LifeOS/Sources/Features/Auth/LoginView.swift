@@ -19,6 +19,27 @@ struct LoginView: View {
             }
 
             VStack(alignment: .leading, spacing: 12) {
+                if sessionStore.hasConfiguredPersonalAccount {
+                    Button {
+                        Task { await sessionStore.signInUsingConfiguredPersonalAccount() }
+                    } label: {
+                        if sessionStore.isSigningIn {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            Label("내 계정으로 로그인", systemImage: "person.crop.circle.badge.checkmark")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(sessionStore.isSigningIn)
+
+                    Divider()
+                    Text("또는 직접 로그인")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
                 #if os(iOS)
                 TextField("이메일", text: $email)
                     .textContentType(.emailAddress)

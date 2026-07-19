@@ -9,6 +9,8 @@ LifeOS의 iPhone·Mac 공용 SwiftUI 앱이다. 현재 범위는 기존 Supabase
 3. 프로젝트 디렉터리에서 `xcodegen generate`를 실행한다.
 4. `LifeOS.xcodeproj`를 Xcode로 열어 `LifeOS` 스킴을 Mac 또는 iPhone 시뮬레이터에서 실행한다.
 
+`Secrets.xcconfig`에 `LIFEOS_ACCOUNT_EMAIL`과 `LIFEOS_ACCOUNT_PASSWORD`도 입력하면 로그인 화면에 "내 계정으로 로그인" 버튼이 생긴다. 이 값은 개인 기기에 설치한 앱 안에는 포함되므로, 본인 전용 기기에서만 사용하고 파일을 절대 Git에 추가하지 않는다.
+
 개인 iPhone에서 실행하기 전에는 Xcode의 Signing & Capabilities에서 본인 Apple 개발 팀을 선택한다. bundle identifier가 이미 사용 중이면 `project.yml`의 `PRODUCT_BUNDLE_IDENTIFIER`를 본인 식별자로 변경한다.
 
 ## 설계 원칙

@@ -15,8 +15,15 @@ final class SessionStore: ObservableObject {
     @Published private(set) var isSigningIn = false
 
     let client: SupabaseClient?
+    private let personalAccountCredentials: PersonalAccountCredentials?
+
+    var hasConfiguredPersonalAccount: Bool {
+        personalAccountCredentials != nil
+    }
 
     init() {
+        personalAccountCredentials = PersonalAccountCredentials.load()
+
         do {
             client = try SupabaseConfiguration.makeClient()
         } catch {
@@ -50,6 +57,18 @@ final class SessionStore: ObservableObject {
         } catch {
             signInError = "로그인하지 못했습니다. 이메일과 비밀번호를 다시 확인하세요."
         }
+    }
+
+    func signInUsingConfiguredPersonalAccount() async {
+        guard let personalAccountCredentials else {
+            signInError = "개인 계정 설정이 없습니다. Secrets.xcconfig에 이메일과 비밀번호를 입력해 주세요."
+            return
+        }
+
+        await signIn(
+            email: personalAccountCredentials.email,
+            password: personalAccountCredentials.password
+        )
     }
 
     func signOut() async {

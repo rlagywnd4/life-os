@@ -43,3 +43,30 @@ enum SupabaseConfiguration {
         return value
     }
 }
+
+struct PersonalAccountCredentials {
+    let email: String
+    let password: String
+
+    static func load(bundle: Bundle = .main) -> PersonalAccountCredentials? {
+        guard let email = optionalValue("LifeOSAccountEmail", bundle: bundle),
+              let password = optionalValue("LifeOSAccountPassword", bundle: bundle) else {
+            return nil
+        }
+
+        return PersonalAccountCredentials(email: email, password: password)
+    }
+
+    private static func optionalValue(_ key: String, bundle: Bundle) -> String? {
+        guard let value = bundle.object(forInfoDictionaryKey: key) as? String else {
+            return nil
+        }
+
+        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedValue.isEmpty, !trimmedValue.hasPrefix("$(") else {
+            return nil
+        }
+
+        return trimmedValue
+    }
+}
