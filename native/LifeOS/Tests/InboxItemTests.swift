@@ -19,6 +19,7 @@ final class InboxItemTests: XCTestCase {
 
         XCTAssertEqual(item.title, "운동 계획 다시 잡기")
         XCTAssertEqual(item.categoryLabel, "운동")
+        XCTAssertEqual(item.statusLabel, "미검토")
     }
 
     func testUsesRawCategoryWhenNoKoreanLabelExists() {
@@ -33,5 +34,6 @@ final class InboxItemTests: XCTestCase {
         )
 
         XCTAssertEqual(item.categoryLabel, "NEW_CATEGORY")
+        XCTAssertEqual(item.statusLabel, "미검토")
     }
 }

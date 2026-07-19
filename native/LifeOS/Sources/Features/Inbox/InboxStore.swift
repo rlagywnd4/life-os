@@ -33,7 +33,6 @@ final class InboxStore: ObservableObject {
             let items: [InboxItem] = try await client
                 .from("inbox_items")
                 .select("id,title,description,category,status,created_at,updated_at")
-                .eq("status", value: "UNREVIEWED")
                 .order("created_at", ascending: false)
                 .execute()
                 .value

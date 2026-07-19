@@ -31,7 +31,7 @@ struct InboxListView: View {
                     ContentUnavailableView {
                         Label("아직 Inbox가 비어 있습니다", systemImage: "tray")
                     } description: {
-                        Text("웹에서 기록한 항목 또는 다음 단계에서 추가할 빠른 입력이 여기에 나타납니다.")
+                        Text("웹 또는 네이티브 앱에서 기록한 항목이 여기에 나타납니다.")
                     }
                 } else {
                     List(items) { item in
@@ -60,9 +60,12 @@ private struct InboxRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(item.categoryLabel)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+            HStack(spacing: 6) {
+                Text(item.categoryLabel)
+                Text(item.statusLabel)
+            }
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
             Text(item.title)
                 .font(.headline)
             if let description = item.description, !description.isEmpty {

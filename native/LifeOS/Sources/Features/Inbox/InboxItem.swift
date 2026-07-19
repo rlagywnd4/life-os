@@ -23,6 +23,10 @@ struct InboxItem: Codable, Identifiable, Equatable {
         Self.categoryLabels[category] ?? category
     }
 
+    var statusLabel: String {
+        Self.statusLabels[status] ?? status
+    }
+
     private static let categoryLabels = [
         "SERVICE_IDEA": "서비스 아이디어",
         "STUDY": "공부",
@@ -34,5 +38,13 @@ struct InboxItem: Codable, Identifiable, Equatable {
         "TRAVEL": "여행",
         "PURCHASE": "구매",
         "ETC": "기타"
+    ]
+
+    private static let statusLabels = [
+        "UNREVIEWED": "미검토",
+        "CONVERTED_TO_PROJECT": "프로젝트 전환됨",
+        "SOMEDAY": "언젠가",
+        "DISCARDED": "폐기",
+        "ARCHIVED": "보관됨"
     ]
 }
