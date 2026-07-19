@@ -69,6 +69,7 @@ iPhone과 Mac에서 공용으로 실행되는 LifeOS 네이티브 V1의 첫 세�
 - 2026-07-19: `Debug.xcconfig`과 `Release.xcconfig`에서 빈 기본값을 먼저 선언하고 마지막에 `Secrets.xcconfig`를 포함하도록 순서를 바꿨다. 이전 순서는 사용자가 입력한 URL과 키를 다시 빈값으로 덮어써 앱이 Supabase URL 설정 오류를 표시했다.
 - 2026-07-19: Xcode의 xcconfig 문법이 `https://` 중 `//` 뒤를 주석으로 처리해 URL을 `https:`로 자르는 것을 확인했다. 예제와 안내를 `https:/$()/프로젝트주소.supabase.co` 형식으로 바꾸고, 앱에서 해당 오류를 구체적으로 안내한다.
 - 2026-07-19: 생성형 Info.plist의 사용자 정의 키가 앱 번들에 포함되지 않는 것을 확인했다. `Sources/Resources/Info.plist`를 명시적으로 사용하도록 바꿔 Supabase URL과 publishable key가 실행 앱에 포함되게 했다.
+- 2026-07-19: 수동 Info.plist에 `CFBundleIdentifier`가 없어 실제 iPhone 설치가 실패하는 것을 확인했다. `CFBundleIdentifier`, 실행 파일명, 패키지 타입, 버전 등 기본 앱 번들 항목을 추가했다.
 
 ## 다음 작업 후보
 
