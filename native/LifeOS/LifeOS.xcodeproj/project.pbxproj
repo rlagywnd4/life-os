@@ -30,6 +30,7 @@
 		EE05A302324AC7A4A52D7D2C /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4C8DD3C2183D123ECFF56C /* SessionStore.swift */; };
 		F1834E4846574438197B9BD6 /* LoginFailureMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DC97E275F880ECF4BC76F9 /* LoginFailureMessageTests.swift */; };
 		FA76E2E16F8ECA045D011979 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB17F9CB194B64AA68A3CEE /* Supabase */; };
+		FCA5BFEC939F4ECDDAA649F2 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D8B8DC68F315944642FEC61 /* KeyboardDismiss.swift */; };
 		FCCB61A4A32B5ACA7161F8DC /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ACBFCFAFECA365B8A21A73C /* HealthStore.swift */; };
 /* End PBXBuildFile section */
 
@@ -49,6 +50,7 @@
 		2C4C8DD3C2183D123ECFF56C /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
 		351B85528D3BED6E9A9DE573 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		3B068A18149358C2453722D3 /* LifeOSMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeOSMainView.swift; sourceTree = "<group>"; };
+		3D8B8DC68F315944642FEC61 /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
 		401FF8B8FEEF640C36E44162 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
 		4A1C4BA41CC4373A2111B5E9 /* SupabaseConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseConfiguration.swift; sourceTree = "<group>"; };
 		51DC97E275F880ECF4BC76F9 /* LoginFailureMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFailureMessageTests.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 				84E3100BD2F9EFA70AD3D706 /* Core */,
 				5F7159788B72576A88A2A57E /* Features */,
 				3D3C9864F20E337B3C4D8CDC /* Resources */,
+				F056CB77DEEFBB2A9FD9BE35 /* Shared */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -228,6 +231,14 @@
 				6FCE39AAA606F42F85113375 /* HealthView.swift */,
 			);
 			path = Health;
+			sourceTree = "<group>";
+		};
+		F056CB77DEEFBB2A9FD9BE35 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				3D8B8DC68F315944642FEC61 /* KeyboardDismiss.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		FF100D6871BA84D7C12C892D /* Today */ = {
@@ -349,6 +360,7 @@
 				40CD643E8CC3F9474D20AF46 /* InboxItem.swift in Sources */,
 				6A774FA96B04F56930DEE13E /* InboxListView.swift in Sources */,
 				2733A3AF146E463771A4C6BB /* InboxStore.swift in Sources */,
+				FCA5BFEC939F4ECDDAA649F2 /* KeyboardDismiss.swift in Sources */,
 				7A7CE86A1F10141A6595BF4A /* LifeOSApp.swift in Sources */,
 				0D249B9FCC67B2E7D3986275 /* LifeOSMainView.swift in Sources */,
 				722B27C58161591D34D2C32D /* LifeOSRootView.swift in Sources */,

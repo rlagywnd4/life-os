@@ -7,7 +7,10 @@ private struct InboxMutation: Encodable {
     let category: String
 }
 
-private struct InboxStatusMutation: Encodable {
+private struct InboxUpdateMutation: Encodable {
+    let title: String
+    let description: String?
+    let category: String
     let status: String
 }
 
@@ -57,17 +60,50 @@ final class InboxStore: ObservableObject {
     }
 
     func create(title: String, description: String, category: String) async -> Bool {
-        await save(item: nil, title: title, description: description, category: category)
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
+            mutationError = "Inbox 제목을 입력해 주세요."
+            return false
+        }
+        return await performMutation {
+            try await self.client.from("inbox_items").insert(
+                InboxMutation(
+                    title: trimmedTitle,
+                    description: description.isEmpty ? nil : description,
+                    category: category
+                )
+            ).execute()
+        }
     }
 
-    func update(_ item: InboxItem, title: String, description: String, category: String) async -> Bool {
-        await save(item: item, title: title, description: description, category: category)
-    }
-
-    func updateStatus(_ item: InboxItem, status: String) async -> Bool {
-        await performMutation {
-            try await self.client.from("inbox_items")
-                .update(InboxStatusMutation(status: status))
+    func update(
+        _ item: InboxItem,
+        title: String,
+        description: String,
+        category: String,
+        status: String
+    ) async -> Bool {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
+            mutationError = "Inbox 제목을 입력해 주세요."
+            return false
+        }
+        let allowedStatuses = item.canEditStatus
+            ? Set(InboxItem.editableStatuses)
+            : Set([item.status])
+        guard allowedStatuses.contains(status) else {
+            mutationError = "선택할 수 없는 Inbox 상태입니다."
+            return false
+        }
+        return await performMutation {
+            try await self.client.from("inbox_items").update(
+                InboxUpdateMutation(
+                    title: trimmedTitle,
+                    description: description.isEmpty ? nil : description,
+                    category: category,
+                    status: status
+                )
+            )
                 .eq("id", value: item.id.uuidString)
                 .execute()
         }
@@ -105,23 +141,6 @@ final class InboxStore: ObservableObject {
                     activateNow: activateNow
                 )
             ).execute()
-        }
-    }
-
-    private func save(item: InboxItem?, title: String, description: String, category: String) async -> Bool {
-        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedTitle.isEmpty else {
-            mutationError = "Inbox 제목을 입력해 주세요."
-            return false
-        }
-        let mutation = InboxMutation(title: trimmedTitle, description: description.isEmpty ? nil : description, category: category)
-        if let item {
-            return await performMutation {
-                try await self.client.from("inbox_items").update(mutation).eq("id", value: item.id.uuidString).execute()
-            }
-        }
-        return await performMutation {
-            try await self.client.from("inbox_items").insert(mutation).execute()
         }
     }
 

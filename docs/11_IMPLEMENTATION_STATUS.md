@@ -22,7 +22,7 @@
 | ----------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Product Constitution                      | Done    | PRD 원문과 Constitution v1 문서 구조가 저장소에 있음.                                                                                                                       |
 | Auth                                      | Partial | 웹과 네이티브에 Supabase 로그인·회원가입·비밀번호 재설정 흐름이 있음. 네이티브 딥링크의 Supabase Redirect URL 등록과 실제 메일 확인이 남아 있음.                           |
-| Capture / Inbox                           | Partial | 웹과 네이티브에 빠른 등록, 전체 목록, 검색·카테고리 필터, CRUD, 상태 전환, 트랜잭션 기반 Project 전환이 있고 운영 Supabase 계약 검증을 통과함. 물리 기기 UI 확인이 남아 있음. |
+| Capture / Inbox                           | Partial | 웹과 네이티브에 빠른 등록, 전체 목록, 검색·카테고리 필터, CRUD, 상태 선택 메뉴, 트랜잭션 기반 Project 전환이 있고 운영 Supabase에서 Inbox 연결과 프로젝트 탭 조회까지 검증함. 물리 기기 UI 확인이 남아 있음. |
 | Projects                                  | Partial | 웹과 네이티브에 상태별 목록·상세, 깊이 제한 없는 활동 트리, 추가·수정·완료, 부모 이동, 경로·진행률·완료 제안이 있고 운영 Supabase 계약 검증을 통과함. 물리 기기 확인이 남아 있음. |
 | Today                                     | Partial | 웹과 네이티브에서 에너지·모드·메모·휴식 이유 저장, 미완료 활동 조회, 오늘/핵심 추가, 완료 처리를 사용할 수 있음. 실제 기기 사용 검증과 오늘 선택 결과 표시 보강이 남아 있음. |
 | Weekly Review                             | Partial | 네이티브에 검토할 Inbox·활성 프로젝트·최근 결과와 회고 임시 저장을 구현함. 웹의 임시 저장 버튼은 아직 DB에 연결되지 않음.                                                   |
@@ -41,6 +41,7 @@
 
 ## Recent Handoffs
 
+- [2026-07-20 Native Inbox Status and Keyboard](./handoffs/2026-07-20-native-inbox-status-keyboard.md)
 - [2026-07-20 Native Web Feature Parity](./handoffs/2026-07-20-native-web-feature-parity.md)
 - [2026-07-18 Native Inbox Read](./handoffs/2026-07-18-native-inbox-read.md)
 - [2026-07-17 Production Deployment Smoke Test](./handoffs/2026-07-17-production-deployment-smoke-test.md)

@@ -36,4 +36,21 @@ final class InboxItemTests: XCTestCase {
         XCTAssertEqual(item.categoryLabel, "NEW_CATEGORY")
         XCTAssertEqual(item.statusLabel, "미검토")
     }
+
+    func testExposesEditableStatusChoicesWithoutProjectConversion() {
+        XCTAssertEqual(
+            InboxItem.editableStatuses.map(InboxItem.statusName),
+            ["미검토", "언젠가", "보관됨", "폐기"]
+        )
+        XCTAssertFalse(InboxItem.editableStatuses.contains("CONVERTED_TO_PROJECT"))
+    }
+
+    func testConvertedProjectStatusCannotBeEditedManually() {
+        let converted = InboxItem(
+            id: UUID(), title: "Converted", description: nil,
+            category: "ETC", status: "CONVERTED_TO_PROJECT",
+            createdAt: "", updatedAt: ""
+        )
+        XCTAssertFalse(converted.canEditStatus)
+    }
 }

@@ -28,7 +28,17 @@ struct InboxItem: Codable, Identifiable, Equatable {
     }
 
     var statusLabel: String {
-        Self.statusLabels[status] ?? status
+        Self.statusName(status)
+    }
+
+    static func statusName(_ status: String) -> String {
+        statusLabels[status] ?? status
+    }
+
+    static let editableStatuses = ["UNREVIEWED", "SOMEDAY", "ARCHIVED", "DISCARDED"]
+
+    var canEditStatus: Bool {
+        status != "CONVERTED_TO_PROJECT"
     }
 
     private static let categoryLabels = [

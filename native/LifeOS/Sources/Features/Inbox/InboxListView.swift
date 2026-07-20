@@ -89,6 +89,7 @@ private struct InboxEditorView: View {
     @State private var title: String
     @State private var description: String
     @State private var category: String
+    @State private var status: String
     @State private var deleteConfirmation = false
     @State private var isConverting = false
 
@@ -98,6 +99,7 @@ private struct InboxEditorView: View {
         _title = State(initialValue: item?.title ?? "")
         _description = State(initialValue: item?.description ?? "")
         _category = State(initialValue: item?.category ?? "ETC")
+        _status = State(initialValue: item?.status ?? "UNREVIEWED")
     }
 
     var body: some View {
@@ -111,12 +113,22 @@ private struct InboxEditorView: View {
             }
             if let item {
                 Section("상태") {
-                    Picker("상태", selection: .constant(item.status)) {
-                        Text(item.statusLabel).tag(item.status)
+                    if item.canEditStatus {
+                        Picker("상태", selection: $status) {
+                            ForEach(InboxItem.editableStatuses, id: \.self) { value in
+                                Text(InboxItem.statusName(value)).tag(value)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        Text("상태를 선택한 뒤 저장을 누르면 반영됩니다.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        LabeledContent("상태", value: item.statusLabel)
+                        Text("프로젝트로 전환된 항목은 연결을 보호하기 위해 상태를 변경할 수 없습니다.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
-                    Button("언젠가로 이동") { Task { _ = await store.updateStatus(item, status: "SOMEDAY") } }
-                    Button("보관") { Task { _ = await store.updateStatus(item, status: "ARCHIVED") } }
-                    Button("폐기", role: .destructive) { Task { _ = await store.updateStatus(item, status: "DISCARDED") } }
                 }
                 if item.status == "UNREVIEWED" {
                     Section {
@@ -132,7 +144,12 @@ private struct InboxEditorView: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button("저장") {
                     Task {
-                        let saved = item == nil ? await store.create(title: title, description: description, category: category) : await store.update(item!, title: title, description: description, category: category)
+                        let saved = item == nil
+                            ? await store.create(title: title, description: description, category: category)
+                            : await store.update(
+                                item!, title: title, description: description,
+                                category: category, status: status
+                            )
                         if saved { dismiss() }
                     }
                 }.disabled(store.isSaving)

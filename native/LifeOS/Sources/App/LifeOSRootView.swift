@@ -33,6 +33,7 @@ struct LifeOSRootView: View {
         .sheet(isPresented: $sessionStore.isPasswordResetPresented) {
             PasswordResetView().environmentObject(sessionStore)
         }
+        .dismissKeyboardWhenTappingOutsideInput()
     }
 }
 
