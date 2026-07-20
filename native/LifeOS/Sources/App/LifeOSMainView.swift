@@ -25,6 +25,7 @@ struct LifeOSMainView: View {
                 } label: {
                     Label("프로젝트", systemImage: "folder")
                 }
+                NavigationLink { MoreView(client: client) } label: { Label("기록과 설정", systemImage: "ellipsis.circle") }
             }
             .navigationTitle("LifeOS")
         } detail: {
@@ -56,6 +57,9 @@ struct LifeOSMainView: View {
                     .toolbar { logoutToolbar }
             }
             .tabItem { Label("프로젝트", systemImage: "folder") }
+
+            NavigationStack { MoreView(client: client).toolbar { logoutToolbar } }
+                .tabItem { Label("더보기", systemImage: "ellipsis.circle") }
         }
         #endif
     }
