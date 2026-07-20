@@ -11,6 +11,11 @@ struct LifeOSMainView: View {
         NavigationSplitView {
             List {
                 NavigationLink {
+                    TodayView(client: client)
+                } label: {
+                    Label("Today", systemImage: "sun.max")
+                }
+                NavigationLink {
                     InboxListView(client: client)
                 } label: {
                     Label("Inbox", systemImage: "tray.full")
@@ -18,7 +23,7 @@ struct LifeOSMainView: View {
             }
             .navigationTitle("LifeOS")
         } detail: {
-            InboxListView(client: client)
+            TodayView(client: client)
         }
         .toolbar {
             ToolbarItem(placement: .automatic) {
@@ -28,16 +33,30 @@ struct LifeOSMainView: View {
             }
         }
         #else
-        NavigationStack {
-            InboxListView(client: client)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("로그아웃", systemImage: "rectangle.portrait.and.arrow.right") {
-                            Task { await sessionStore.signOut() }
-                        }
-                    }
-                }
+        TabView {
+            NavigationStack {
+                TodayView(client: client)
+                    .toolbar { logoutToolbar }
+            }
+            .tabItem { Label("Today", systemImage: "sun.max") }
+
+            NavigationStack {
+                InboxListView(client: client)
+                    .toolbar { logoutToolbar }
+            }
+            .tabItem { Label("Inbox", systemImage: "tray.full") }
         }
         #endif
     }
+
+    #if os(iOS)
+    @ToolbarContentBuilder
+    private var logoutToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("로그아웃", systemImage: "rectangle.portrait.and.arrow.right") {
+                Task { await sessionStore.signOut() }
+            }
+        }
+    }
+    #endif
 }
