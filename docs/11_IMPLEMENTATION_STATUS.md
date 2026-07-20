@@ -23,7 +23,7 @@
 | Product Constitution                      | Done    | PRD 원문과 Constitution v1 문서 구조가 저장소에 있음.                                                                                                                       |
 | Auth                                      | Partial | Supabase Auth 기반 로그인/회원가입/비밀번호 재설정 흐름 있음. 실제 환경 검증은 Supabase 설정 필요.                                                                          |
 | Capture / Inbox                           | Partial | 빠른 Inbox 등록, 검색/필터, Project/Someday 전환 흐름 있음. 주요 액션은 클릭/제출 중 피드백을 표시함.                                                                       |
-| Projects                                  | Partial | 프로젝트와 계층형 활동 관리 흐름 있음. 활동 트리, 상세 편집, 부모 이동, 하위 진행률과 수동 완료 제안을 프로덕션 임시 계정으로 검증함. 실제 사용자 피드백 필요.              |
+| Projects                                  | Partial | 웹과 네이티브에 프로젝트 상태별 목록, 상세, 활동 추가·수정·완료, 부모 활동 선택이 있음. 네이티브 하위 진행률·완료 제안과 실제 계정 쓰기 검증이 남아 있음.                |
 | Today                                     | Partial | 웹과 네이티브에서 에너지·모드·메모·휴식 이유 저장, 미완료 활동 조회, 오늘/핵심 추가, 완료 처리를 사용할 수 있음. 실제 기기 사용 검증과 오늘 선택 결과 표시 보강이 남아 있음. |
 | Weekly Review                             | Partial | 주간 리뷰 기본 흐름 있음.                                                                                                                                                   |
 | Health & Diet MVP                         | Partial | 프로필, 체크인, 체중 목표, 운동/리포트 화면 기본 구현 있음. 저장/삭제 액션은 클릭/제출 중 피드백을 표시함. 실제 사용 피드백 필요.                                           |

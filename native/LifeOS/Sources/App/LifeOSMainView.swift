@@ -20,6 +20,11 @@ struct LifeOSMainView: View {
                 } label: {
                     Label("Inbox", systemImage: "tray.full")
                 }
+                NavigationLink {
+                    ProjectsView(client: client)
+                } label: {
+                    Label("프로젝트", systemImage: "folder")
+                }
             }
             .navigationTitle("LifeOS")
         } detail: {
@@ -45,6 +50,12 @@ struct LifeOSMainView: View {
                     .toolbar { logoutToolbar }
             }
             .tabItem { Label("Inbox", systemImage: "tray.full") }
+
+            NavigationStack {
+                ProjectsView(client: client)
+                    .toolbar { logoutToolbar }
+            }
+            .tabItem { Label("프로젝트", systemImage: "folder") }
         }
         #endif
     }
