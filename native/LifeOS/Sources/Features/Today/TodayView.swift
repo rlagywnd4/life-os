@@ -15,6 +15,8 @@ struct TodayView: View {
     var body: some View {
         Form {
             Section("오늘 · \(store.today)") {
+                Text("권장 핵심 행동 \(recommendedRange.min)~\(recommendedRange.max)개")
+                    .font(.caption).foregroundStyle(.secondary)
                 Picker("에너지", selection: $energyLevel) {
                     Text("낮음").tag("LOW")
                     Text("보통").tag("MEDIUM")
@@ -33,6 +35,10 @@ struct TodayView: View {
                     Task { await store.savePlan(energyLevel: energyLevel, dayMode: dayMode, note: note, restReason: restReason) }
                 }
                 .disabled(store.isSaving)
+                if dayMode == "REST" || dayMode == "RECOVERY" {
+                    Label("오늘은 회복을 선택한 날입니다. 쉬는 것도 계획의 일부입니다.", systemImage: "moon.stars")
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Section("행동 선택") {
@@ -67,5 +73,13 @@ struct TodayView: View {
             restReason = store.plan?.restReason ?? ""
         }
         .refreshable { await store.load() }
+    }
+
+    private var recommendedRange: (min: Int, max: Int) {
+        switch energyLevel {
+        case "LOW": return (0, 1)
+        case "HIGH": return (1, 3)
+        default: return (1, 2)
+        }
     }
 }

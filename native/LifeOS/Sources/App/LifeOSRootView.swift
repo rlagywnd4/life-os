@@ -27,6 +27,12 @@ struct LifeOSRootView: View {
         .task {
             await sessionStore.restoreSession()
         }
+        .onOpenURL { url in
+            Task { await sessionStore.handleOpenURL(url) }
+        }
+        .sheet(isPresented: $sessionStore.isPasswordResetPresented) {
+            PasswordResetView().environmentObject(sessionStore)
+        }
     }
 }
 

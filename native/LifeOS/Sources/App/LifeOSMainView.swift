@@ -11,6 +11,11 @@ struct LifeOSMainView: View {
         NavigationSplitView {
             List {
                 NavigationLink {
+                    DashboardView(client: client)
+                } label: {
+                    Label("홈", systemImage: "house")
+                }
+                NavigationLink {
                     TodayView(client: client)
                 } label: {
                     Label("Today", systemImage: "sun.max")
@@ -26,10 +31,11 @@ struct LifeOSMainView: View {
                     Label("프로젝트", systemImage: "folder")
                 }
                 NavigationLink { MoreView(client: client) } label: { Label("기록과 설정", systemImage: "ellipsis.circle") }
+                NavigationLink { HealthView(client: client) } label: { Label("건강", systemImage: "heart") }
             }
             .navigationTitle("LifeOS")
         } detail: {
-            TodayView(client: client)
+            DashboardView(client: client)
         }
         .toolbar {
             ToolbarItem(placement: .automatic) {
@@ -41,10 +47,10 @@ struct LifeOSMainView: View {
         #else
         TabView {
             NavigationStack {
-                TodayView(client: client)
+                DashboardView(client: client)
                     .toolbar { logoutToolbar }
             }
-            .tabItem { Label("Today", systemImage: "sun.max") }
+            .tabItem { Label("홈", systemImage: "house") }
 
             NavigationStack {
                 InboxListView(client: client)
@@ -60,6 +66,9 @@ struct LifeOSMainView: View {
 
             NavigationStack { MoreView(client: client).toolbar { logoutToolbar } }
                 .tabItem { Label("더보기", systemImage: "ellipsis.circle") }
+
+            NavigationStack { HealthView(client: client).toolbar { logoutToolbar } }
+                .tabItem { Label("건강", systemImage: "heart") }
         }
         #endif
     }

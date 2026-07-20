@@ -11,6 +11,22 @@ private struct InboxStatusMutation: Encodable {
     let status: String
 }
 
+private struct ConvertInboxParameters: Encodable {
+    let inboxId: String
+    let projectTitle: String
+    let projectReason: String
+    let projectDesiredOutcome: String
+    let activateNow: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case inboxId = "inbox_id"
+        case projectTitle = "project_title"
+        case projectReason = "project_reason"
+        case projectDesiredOutcome = "project_desired_outcome"
+        case activateNow = "activate_now"
+    }
+}
+
 @MainActor
 final class InboxStore: ObservableObject {
     enum State: Equatable {
@@ -63,6 +79,32 @@ final class InboxStore: ObservableObject {
                 .delete()
                 .eq("id", value: item.id.uuidString)
                 .execute()
+        }
+    }
+
+    func convertToProject(
+        _ item: InboxItem,
+        title: String,
+        reason: String,
+        desiredOutcome: String,
+        activateNow: Bool
+    ) async -> Bool {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
+            mutationError = "프로젝트 제목을 입력해 주세요."
+            return false
+        }
+        return await performMutation {
+            try await self.client.rpc(
+                "convert_inbox_to_project",
+                params: ConvertInboxParameters(
+                    inboxId: item.id.uuidString,
+                    projectTitle: trimmedTitle,
+                    projectReason: reason,
+                    projectDesiredOutcome: desiredOutcome,
+                    activateNow: activateNow
+                )
+            ).execute()
         }
     }
 

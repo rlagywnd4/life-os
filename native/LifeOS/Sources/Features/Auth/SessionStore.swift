@@ -54,6 +54,8 @@ final class SessionStore: ObservableObject {
     @Published private(set) var state: State = .loading
     @Published private(set) var signInError: String?
     @Published private(set) var isSigningIn = false
+    @Published private(set) var authMessage: String?
+    @Published var isPasswordResetPresented = false
 
     let client: SupabaseClient?
     private let personalAccountCredentials: PersonalAccountCredentials?
@@ -89,6 +91,7 @@ final class SessionStore: ObservableObject {
 
         isSigningIn = true
         signInError = nil
+        authMessage = nil
         defer { isSigningIn = false }
 
         do {
@@ -97,6 +100,74 @@ final class SessionStore: ObservableObject {
             state = .signedIn(email: session.user.email)
         } catch {
             signInError = LoginFailureMessage.make(from: error)
+        }
+    }
+
+    func signUp(email: String, password: String) async -> Bool {
+        guard let client else { return false }
+        guard password.count >= 6 else { signInError = "비밀번호는 6자 이상이어야 합니다."; return false }
+        isSigningIn = true
+        signInError = nil
+        authMessage = nil
+        defer { isSigningIn = false }
+        do {
+            try await client.auth.signUp(
+                email: email.trimmingCharacters(in: .whitespacesAndNewlines),
+                password: password,
+                redirectTo: URL(string: "lifeos://auth-callback")
+            )
+            authMessage = "가입 확인 메일을 보냈습니다. 메일의 링크를 열어 주세요."
+            return true
+        } catch {
+            signInError = LoginFailureMessage.make(from: error)
+            return false
+        }
+    }
+
+    func sendPasswordReset(email: String) async -> Bool {
+        guard let client else { return false }
+        isSigningIn = true
+        signInError = nil
+        authMessage = nil
+        defer { isSigningIn = false }
+        do {
+            try await client.auth.resetPasswordForEmail(
+                email.trimmingCharacters(in: .whitespacesAndNewlines),
+                redirectTo: URL(string: "lifeos://reset-password")
+            )
+            authMessage = "비밀번호 재설정 메일을 보냈습니다."
+            return true
+        } catch {
+            signInError = LoginFailureMessage.make(from: error)
+            return false
+        }
+    }
+
+    func handleOpenURL(_ url: URL) async {
+        guard let client else { return }
+        do {
+            let session = try await client.auth.session(from: url)
+            state = .signedIn(email: session.user.email)
+            isPasswordResetPresented = url.host == "reset-password"
+        } catch {
+            signInError = "인증 링크를 처리하지 못했습니다. 링크가 만료되지 않았는지 확인해 주세요."
+        }
+    }
+
+    func updatePassword(_ password: String) async -> Bool {
+        guard let client else { return false }
+        guard password.count >= 6 else { signInError = "비밀번호는 6자 이상이어야 합니다."; return false }
+        isSigningIn = true
+        signInError = nil
+        defer { isSigningIn = false }
+        do {
+            try await client.auth.update(user: UserAttributes(password: password))
+            authMessage = "비밀번호를 변경했습니다."
+            isPasswordResetPresented = false
+            return true
+        } catch {
+            signInError = LoginFailureMessage.make(from: error)
+            return false
         }
     }
 
@@ -122,6 +193,7 @@ final class SessionStore: ObservableObject {
         }
 
         signInError = nil
+        authMessage = nil
         state = .signedOut
     }
 }

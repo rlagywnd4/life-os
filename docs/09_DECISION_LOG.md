@@ -37,6 +37,41 @@ PRD Impact:
 - PRD 반영 필요 여부.
 ```
 
+## 2026-07-20 - 네이티브 인증 메일은 앱 전용 딥링크로 복귀
+
+Status: Accepted
+Scope: Engineering / UX / Security
+
+Context:
+
+- 웹에 있던 회원가입·비밀번호 재설정 기능을 iPhone과 Mac에서도 완료하려면 Supabase 인증 메일 링크가 네이티브 앱으로 돌아와야 한다.
+- 기존 웹 URL로 돌아가면 비밀번호 변경은 가능하지만 네이티브 전환 이후에도 인증 완료를 위해 브라우저에 의존한다.
+
+Decision:
+
+- 네이티브 앱에 `lifeos` URL scheme을 등록한다.
+- 가입 확인은 `lifeos://auth-callback`, 비밀번호 재설정은 `lifeos://reset-password`를 사용한다.
+- 콜백 세션은 Supabase SDK가 검증하고, 재설정 콜백일 때만 새 비밀번호 입력 화면을 연다.
+
+Rationale:
+
+- iPhone과 Mac이 같은 콜백 계약을 공유하고 인증 흐름을 앱 안에서 마칠 수 있다.
+- 인증 코드와 세션 처리를 직접 구현하지 않고 기존 Supabase PKCE 처리를 재사용한다.
+
+Alternatives:
+
+- 웹 URL로만 복귀하는 방식은 네이티브 사용자 흐름이 끊겨 제외했다.
+- Universal Link는 별도 웹 도메인 연동과 Associated Domains 설정이 필요해 개인용 V1에는 과도하므로 제외했다.
+
+Impact:
+
+- Supabase Auth Redirect URL 허용 목록에 두 `lifeos://` 주소를 한 번 등록해야 한다.
+- 동일 URL scheme을 사용하는 다른 앱이 설치될 가능성을 고려해, 공개 배포로 전환할 때는 Universal Link를 다시 검토한다.
+
+PRD Impact:
+
+- 없음. 기존 인증 기능을 네이티브에서 완결하기 위한 구현 결정이다.
+
 ## 2026-07-19 - 네이티브 Inbox 읽기는 웹과 같은 전체 상태 목록을 사용
 
 Status: Accepted

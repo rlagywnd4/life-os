@@ -42,3 +42,16 @@ struct ProjectAction: Codable, Identifiable, Equatable {
         ["TODO": "할 일", "PLANNED": "계획됨", "IN_PROGRESS": "진행 중", "DONE": "완료", "SKIPPED": "건너뜀", "CANCELED": "취소"][status] ?? status
     }
 }
+
+struct ProjectActionNode: Identifiable {
+    let action: ProjectAction
+    let depth: Int
+    var id: UUID { action.id }
+}
+
+struct ProjectActionProgress {
+    let completed: Int
+    let total: Int
+    var percentage: Int { total == 0 ? 0 : Int((Double(completed) / Double(total) * 100).rounded()) }
+    var allCompleted: Bool { total > 0 && completed == total }
+}

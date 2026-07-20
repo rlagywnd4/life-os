@@ -6,6 +6,7 @@ struct InboxListView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var searchText = ""
     @State private var isCreating = false
+    @State private var categoryFilter = ""
 
     init(client: SupabaseClient) {
         _store = StateObject(wrappedValue: InboxStore(client: client))
@@ -29,7 +30,10 @@ struct InboxListView: View {
                 }
 
             case .loaded(let items):
-                let filteredItems = items.filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) || ($0.description?.localizedCaseInsensitiveContains(searchText) ?? false) }
+                let filteredItems = items.filter {
+                    (categoryFilter.isEmpty || $0.category == categoryFilter) &&
+                    (searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) || ($0.description?.localizedCaseInsensitiveContains(searchText) ?? false))
+                }
                 if filteredItems.isEmpty {
                     ContentUnavailableView {
                         Label("아직 Inbox가 비어 있습니다", systemImage: "tray")
@@ -51,6 +55,15 @@ struct InboxListView: View {
         .navigationTitle("Inbox")
         .searchable(text: $searchText, prompt: "Inbox 검색")
         .toolbar {
+            Menu {
+                Button("전체 카테고리") { categoryFilter = "" }
+                Divider()
+                ForEach(["SERVICE_IDEA", "STUDY", "CAREER", "EXERCISE", "CONTENT", "HOBBY", "LIFE", "TRAVEL", "PURCHASE", "ETC"], id: \.self) { value in
+                    Button(InboxItem.categoryName(value)) { categoryFilter = value }
+                }
+            } label: {
+                Label(categoryFilter.isEmpty ? "필터" : InboxItem.categoryName(categoryFilter), systemImage: "line.3.horizontal.decrease.circle")
+            }
             Button("추가", systemImage: "plus") { isCreating = true }
         }
         .sheet(isPresented: $isCreating) {
@@ -77,6 +90,7 @@ private struct InboxEditorView: View {
     @State private var description: String
     @State private var category: String
     @State private var deleteConfirmation = false
+    @State private var isConverting = false
 
     init(store: InboxStore, item: InboxItem? = nil) {
         self.store = store
@@ -104,6 +118,11 @@ private struct InboxEditorView: View {
                     Button("보관") { Task { _ = await store.updateStatus(item, status: "ARCHIVED") } }
                     Button("폐기", role: .destructive) { Task { _ = await store.updateStatus(item, status: "DISCARDED") } }
                 }
+                if item.status == "UNREVIEWED" {
+                    Section {
+                        Button("프로젝트로 전환", systemImage: "arrow.right.circle") { isConverting = true }
+                    }
+                }
                 Section { Button("삭제", role: .destructive) { deleteConfirmation = true } }
             }
             if let error = store.mutationError { Text(error).foregroundStyle(.red) }
@@ -121,6 +140,57 @@ private struct InboxEditorView: View {
         }
         .alert("Inbox를 삭제할까요?", isPresented: $deleteConfirmation) {
             Button("삭제", role: .destructive) { Task { if await store.delete(item!) { dismiss() } } }
+        }
+        .sheet(isPresented: $isConverting) {
+            NavigationStack {
+                InboxProjectConversionView(store: store, item: item!) {
+                    isConverting = false
+                    dismiss()
+                }
+            }
+        }
+    }
+}
+
+private struct InboxProjectConversionView: View {
+    @ObservedObject var store: InboxStore
+    let item: InboxItem
+    let onConverted: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var title: String
+    @State private var reason = ""
+    @State private var desiredOutcome = ""
+    @State private var activateNow = true
+
+    init(store: InboxStore, item: InboxItem, onConverted: @escaping () -> Void) {
+        self.store = store
+        self.item = item
+        self.onConverted = onConverted
+        _title = State(initialValue: item.title)
+    }
+
+    var body: some View {
+        Form {
+            TextField("프로젝트 제목", text: $title)
+            TextField("이 프로젝트가 필요한 이유", text: $reason, axis: .vertical)
+            TextField("원하는 결과", text: $desiredOutcome, axis: .vertical)
+            Toggle("바로 활성 프로젝트로 시작", isOn: $activateNow)
+            if let error = store.mutationError { Text(error).foregroundStyle(.red) }
+        }
+        .navigationTitle("프로젝트로 전환")
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) { Button("취소") { dismiss() } }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("전환") {
+                    Task {
+                        if await store.convertToProject(
+                            item, title: title, reason: reason,
+                            desiredOutcome: desiredOutcome, activateNow: activateNow
+                        ) { onConverted() }
+                    }
+                }
+                .disabled(store.isSaving)
+            }
         }
     }
 }
