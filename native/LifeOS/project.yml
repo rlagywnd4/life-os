@@ -25,6 +25,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rlagywnd4.lifeos
         PRODUCT_NAME: LifeOS
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 99YP4KFBG3
         SWIFT_VERSION: "6.0"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Sources/Resources/Info.plist
