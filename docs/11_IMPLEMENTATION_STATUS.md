@@ -27,7 +27,7 @@
 | Today                                     | Partial | 웹과 네이티브에서 에너지·모드·메모·휴식 이유 저장, 미완료 활동 조회, 오늘/핵심 추가, 완료 처리를 사용할 수 있음. 실제 기기 사용 검증과 오늘 선택 결과 표시 보강이 남아 있음. |
 | Weekly Review                             | Partial | 주간 리뷰 기본 흐름 있음.                                                                                                                                                   |
 | Health & Diet MVP                         | Partial | 프로필, 체크인, 체중 목표, 운동/리포트 화면 기본 구현 있음. 저장/삭제 액션은 클릭/제출 중 피드백을 표시함. 실제 사용 피드백 필요.                                           |
-| Native App V1                             | Partial | iPhone·Mac 공용 SwiftUI 기반과 Supabase 로그인, 선택적인 개인 계정 원클릭 로그인, 로그인 실패 원인 안내, 모든 상태의 Inbox 읽기 흐름을 구현함. 실제 계정 로그인 확인, Inbox 추가·수정·삭제, 검색, 실시간 갱신은 아직 남아 있음. |
+| Native App V1                             | Partial | iPhone·Mac 공용 SwiftUI 기반과 Supabase 로그인, 개인 계정 원클릭 로그인, Today 기본 흐름, Inbox 조회·추가·수정·삭제·검색·상태 전환을 구현함. 프로젝트 이후 기능과 실제 계정 쓰기 검증이 남아 있음. |
 | Deployment Automation                     | Partial | GitHub 비밀값 등록, 최초 history 복구, 실제 DB migration, Vercel Production 배포, repair 없는 일반 재실행을 완료함. Vercel Production Deployment Check 등록 여부 확인 필요. |
 | Codex Delivery Process                    | Done    | 기능 PR은 사용자가 Preview 또는 테스트 빌드로 확인한 뒤 병합하며, 영문 Conventional Commit·한국어 PR·Squash merge·안전한 복구와 SSH·GitHub App 인증 자동화를 적용함.  |
 | AI Memory / Life Graph                    | Planned | `life_context_*` 저장 구조 초안은 있으나, AI 관계 추천/승인 흐름은 미구현. 네이티브 생각 정리 AI는 V1 이후 기능으로 분리했다.                                              |

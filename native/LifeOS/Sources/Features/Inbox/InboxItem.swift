@@ -20,7 +20,11 @@ struct InboxItem: Codable, Identifiable, Equatable {
     }
 
     var categoryLabel: String {
-        Self.categoryLabels[category] ?? category
+        Self.categoryName(category)
+    }
+
+    static func categoryName(_ category: String) -> String {
+        categoryLabels[category] ?? category
     }
 
     var statusLabel: String {
