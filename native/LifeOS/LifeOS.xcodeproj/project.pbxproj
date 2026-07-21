@@ -20,6 +20,7 @@
 		7865B2595E1001A44E4063FB /* SupabaseConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1C4BA41CC4373A2111B5E9 /* SupabaseConfiguration.swift */; };
 		7A7CE86A1F10141A6595BF4A /* LifeOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30CFAE8C8819938931A8C88 /* LifeOSApp.swift */; };
 		7BF7FB4F3624DDBF1794A3C7 /* InboxItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E007A8CAE95409C79B607928 /* InboxItemTests.swift */; };
+		83F6372F6DE52807ADD50238 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A00D7DD127452446C051CB4F /* Assets.xcassets */; };
 		A18D922B895C1500C03394EB /* HealthModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77570707CA87C08749EE19E9 /* HealthModelsTests.swift */; };
 		BAD29B539B8217F0CB7687E7 /* ProjectModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9978E976D094607544BD77F /* ProjectModelsTests.swift */; };
 		CFBA99DA5A60A711D422653D /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401FF8B8FEEF640C36E44162 /* MoreView.swift */; };
@@ -63,6 +64,7 @@
 		7ACBFCFAFECA365B8A21A73C /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		7B856AE34114D3F24B789576 /* InboxItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxItem.swift; sourceTree = "<group>"; };
 		8671E5190D85581F413D4CC9 /* HealthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthModels.swift; sourceTree = "<group>"; };
+		A00D7DD127452446C051CB4F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A7B67B4E5EECE53252F9B882 /* LifeOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LifeOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEFCABC03C76A90FFB6D55A6 /* ProjectModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModels.swift; sourceTree = "<group>"; };
 		C0C5C7183B2BCBE3FD0D07B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 		3D3C9864F20E337B3C4D8CDC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A00D7DD127452446C051CB4F /* Assets.xcassets */,
 				C0C5C7183B2BCBE3FD0D07B3 /* Info.plist */,
 			);
 			path = Resources;
@@ -267,6 +270,7 @@
 			buildConfigurationList = CF739040176A16175E0B5AE2 /* Build configuration list for PBXNativeTarget "LifeOS" */;
 			buildPhases = (
 				FC4407E4CCF14240FD08AF3D /* Sources */,
+				A5B7CA9DF3738241124E2135 /* Resources */,
 				8139E3C33608AB564F113C57 /* Frameworks */,
 			);
 			buildRules = (
@@ -336,6 +340,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A5B7CA9DF3738241124E2135 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				83F6372F6DE52807ADD50238 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D03757CBEFA78CB7E3BD7900 /* Sources */ = {
