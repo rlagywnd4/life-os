@@ -21,6 +21,11 @@ struct LifeOSMainView: View {
                     Label("Today", systemImage: "sun.max")
                 }
                 NavigationLink {
+                    CalendarView(client: client)
+                } label: {
+                    Label("달력", systemImage: "calendar")
+                }
+                NavigationLink {
                     InboxListView(client: client)
                 } label: {
                     Label("Inbox", systemImage: "tray.full")
@@ -52,11 +57,11 @@ struct LifeOSMainView: View {
             }
             .tabItem { Label("홈", systemImage: "house") }
 
-            NavigationStack {
-                InboxListView(client: client)
-                    .toolbar { logoutToolbar }
-            }
-            .tabItem { Label("Inbox", systemImage: "tray.full") }
+            NavigationStack { TodayView(client: client).toolbar { logoutToolbar } }
+                .tabItem { Label("오늘", systemImage: "sun.max") }
+
+            NavigationStack { CalendarView(client: client).toolbar { logoutToolbar } }
+                .tabItem { Label("달력", systemImage: "calendar") }
 
             NavigationStack {
                 ProjectsView(client: client)
@@ -67,8 +72,6 @@ struct LifeOSMainView: View {
             NavigationStack { MoreView(client: client).toolbar { logoutToolbar } }
                 .tabItem { Label("더보기", systemImage: "ellipsis.circle") }
 
-            NavigationStack { HealthView(client: client).toolbar { logoutToolbar } }
-                .tabItem { Label("건강", systemImage: "heart") }
         }
         #endif
     }

@@ -37,6 +37,42 @@ PRD Impact:
 - PRD 반영 필요 여부.
 ```
 
+## 2026-07-21 - 활동 실행일을 달력과 Today의 단일 기준으로 사용
+
+Status: Accepted
+Scope: Product / Data / UX
+
+Context:
+
+- 기존 `action_items.scheduled_date`와 `daily_plan_actions`가 날짜 계획을 함께 표현해 서로 다른 날짜를 가리킬 수 있었다.
+- 달력 재배치는 실행 계획을 바꾸지만 마감일이나 완료 여부를 자동으로 실패 처리해서는 안 된다.
+
+Decision:
+
+- `action_items.scheduled_date`를 활동 실행일의 단일 기준으로 사용하고 선택적 `scheduled_time`, 독립적인 `due_date`를 추가한다.
+- `daily_plan_actions`는 핵심 여부, 순서, 결과와 회고를 담당하며 활동을 옮길 때 RPC가 새 날짜의 계획으로 함께 이동한다.
+- 일반 일정은 완료 가능한 프로젝트 활동과 의미가 다르므로 `calendar_events`에 분리한다.
+- 재배치는 실패가 아니라 변경 이력으로 `action_schedule_changes`에 기록한다.
+
+Rationale:
+
+- 달력, Today, 프로젝트 상세가 같은 실행일을 사용하면 중복 상태와 날짜 불일치를 줄일 수 있다.
+- 실행일과 마감일을 분리해야 현실에 맞춰 계획을 옮기면서도 외부 약속이나 최종 기한을 유지할 수 있다.
+
+Alternatives:
+
+- 모든 항목을 하나의 범용 달력 테이블로 만드는 방식은 활동 계층·완료·프로젝트 진행률 연결을 약화시켜 제외했다.
+- 반복 규칙까지 첫 migration에 포함하는 방식은 예외 날짜와 반복 편집 정책이 아직 검증되지 않아 후속으로 미뤘다.
+
+Impact:
+
+- 운영 환경에 `202607210001_native_calendar_mvp.sql`을 적용해야 새 네이티브 화면을 사용할 수 있다.
+- 외부 캘린더 연동과 반복 일정은 별도 데이터·UX 결정이 필요하다.
+
+PRD Impact:
+
+- PRD의 Today와 Plan 경험을 구체화하며 충돌은 없다. 달력에 관한 새 제품 요구는 다음 PRD 갱신 때 GPT가 반영할 후보이다.
+
 ## 2026-07-20 - 네이티브 인증 메일은 앱 전용 딥링크로 복귀
 
 Status: Accepted

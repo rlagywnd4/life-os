@@ -117,6 +117,8 @@ struct MoreView: View {
     init(client: SupabaseClient) { _store = StateObject(wrappedValue: MoreStore(client: client)) }
     var body: some View {
         List {
+            NavigationLink { InboxListView(client: store.client) } label: { Label("Inbox", systemImage: "tray.full") }
+            NavigationLink { HealthView(client: store.client) } label: { Label("건강", systemImage: "heart") }
             NavigationLink("Someday") { SimpleSectionList(title: "Someday", rows: store.someday.map { ($0.title, $0.description ?? $0.category) }) }
             NavigationLink("주간 리뷰") { WeeklyReviewNativeView(store: store) }
             NavigationLink("히스토리") { HistoryNativeView(store: store) }

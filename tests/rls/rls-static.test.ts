@@ -23,34 +23,53 @@ const userOwnedTables = [
   "health_weight_goals",
   "health_check_ins",
   "life_context_documents",
-  "life_context_entries"
+  "life_context_entries",
+  "calendar_events",
+  "action_schedule_changes"
 ];
 
 describe("RLS migration", () => {
   it("enables row level security for all user-owned tables", () => {
     for (const table of userOwnedTables) {
-      expect(sql).toContain(`alter table public.${table} enable row level security`);
+      expect(sql).toContain(
+        `alter table public.${table} enable row level security`
+      );
     }
   });
 
   it("uses auth.uid ownership checks for CRUD policies", () => {
     for (const table of userOwnedTables) {
-      const pattern = new RegExp(`on public\\.${table}[\\s\\S]+auth\\.uid\\(\\)`, "m");
+      const pattern = new RegExp(
+        `on public\\.${table}[\\s\\S]+auth\\.uid\\(\\)`,
+        "m"
+      );
       expect(sql).toMatch(pattern);
     }
   });
 
   it("contains atomic RPC functions for conversion and daily planning", () => {
-    expect(sql).toContain("create or replace function public.convert_inbox_to_project");
+    expect(sql).toContain(
+      "create or replace function public.convert_inbox_to_project"
+    );
     expect(sql).toContain("for update");
     expect(sql).toContain("ACTIVE_PROJECT_LIMIT_EXCEEDED");
-    expect(sql).toContain("create or replace function public.add_core_action_to_today");
+    expect(sql).toContain(
+      "create or replace function public.add_core_action_to_today"
+    );
     expect(sql).toContain("CORE_ACTION_LIMIT_EXCEEDED");
+    expect(sql).toContain(
+      "create or replace function public.reschedule_action"
+    );
+    expect(sql).toContain("ACTION_NOT_SCHEDULABLE");
   });
 
   it("guards action hierarchy ownership, project scope, and cycles", () => {
-    expect(sql).toContain("add column parent_action_id uuid references public.action_items(id)");
-    expect(sql).toContain("create or replace function public.validate_action_hierarchy");
+    expect(sql).toContain(
+      "add column parent_action_id uuid references public.action_items(id)"
+    );
+    expect(sql).toContain(
+      "create or replace function public.validate_action_hierarchy"
+    );
     expect(sql).toContain("parent_owner_id <> new.user_id");
     expect(sql).toContain("parent_project_id <> new.project_id");
     expect(sql).toContain("ACTION_HIERARCHY_CYCLE");

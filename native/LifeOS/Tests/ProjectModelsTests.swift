@@ -13,6 +13,9 @@ final class ProjectModelsTests: XCTestCase {
           "description": "30분 안에 끝내기",
           "estimated_minutes": 30,
           "status": "TODO",
+          "scheduled_date": null,
+          "scheduled_time": null,
+          "due_date": null,
           "completed_at": null
         }
         """.data(using: .utf8)!

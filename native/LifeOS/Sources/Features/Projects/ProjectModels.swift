@@ -28,6 +28,9 @@ struct ProjectAction: Codable, Identifiable, Equatable {
     let description: String?
     let estimatedMinutes: Int
     let status: String
+    let scheduledDate: String?
+    let scheduledTime: String?
+    let dueDate: String?
     let completedAt: String?
 
     enum CodingKeys: String, CodingKey {
@@ -35,6 +38,9 @@ struct ProjectAction: Codable, Identifiable, Equatable {
         case projectId = "project_id"
         case parentActionId = "parent_action_id"
         case estimatedMinutes = "estimated_minutes"
+        case scheduledDate = "scheduled_date"
+        case scheduledTime = "scheduled_time"
+        case dueDate = "due_date"
         case completedAt = "completed_at"
     }
 
