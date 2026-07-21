@@ -7,6 +7,7 @@ struct TodayView: View {
     @State private var dayMode = "NORMAL"
     @State private var note = ""
     @State private var restReason = ""
+    @State private var availableMinutes = 120
 
     init(client: SupabaseClient) {
         _store = StateObject(wrappedValue: TodayStore(client: client))
@@ -31,8 +32,9 @@ struct TodayView: View {
                 }
                 TextField("하루 메모", text: $note, axis: .vertical)
                 TextField("휴식 또는 회복을 선택한 이유", text: $restReason, axis: .vertical)
+                Stepper("오늘 가능한 시간 \(availableMinutes)분", value: $availableMinutes, in: 0...720, step: 15)
                 Button(store.isSaving ? "저장 중" : "오늘 계획 저장") {
-                    Task { await store.savePlan(energyLevel: energyLevel, dayMode: dayMode, note: note, restReason: restReason) }
+                    Task { await store.savePlan(energyLevel: energyLevel, dayMode: dayMode, note: note, restReason: restReason, availableMinutes: availableMinutes) }
                 }
                 .disabled(store.isSaving)
                 if dayMode == "REST" || dayMode == "RECOVERY" {
@@ -41,8 +43,37 @@ struct TodayView: View {
                 }
             }
 
-            Section("행동 선택") {
-                ForEach(store.actions) { action in
+            if store.plannedMinutes > availableMinutes {
+                Section {
+                    Label("오늘 계획이 가능한 시간보다 \(store.plannedMinutes - availableMinutes)분 많습니다. 일부 활동을 옮겨도 괜찮습니다.", systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                }
+            }
+
+            Section("오늘의 시간표") {
+                ForEach(store.events) { event in
+                    VStack(alignment: .leading) {
+                        Text(event.title).font(.headline)
+                        Text(event.isAllDay ? "종일 일정" : LifeOSDate.timeLabel(event.startTime)).font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+                ForEach(store.scheduledActions.filter { $0.scheduledTime != nil }) { action in
+                    TodayPlannedActionRow(store: store, action: action)
+                }
+                if store.events.isEmpty && store.scheduledActions.allSatisfy({ $0.scheduledTime == nil }) {
+                    Text("시간이 정해진 일정이나 활동이 없습니다.").foregroundStyle(.secondary)
+                }
+            }
+
+            Section("오늘 중 완료") {
+                ForEach(store.scheduledActions.filter { $0.scheduledTime == nil }) { action in
+                    TodayPlannedActionRow(store: store, action: action)
+                }
+                if store.scheduledActions.allSatisfy({ $0.scheduledTime != nil }) { Text("시간 미정 활동이 없습니다.").foregroundStyle(.secondary) }
+            }
+
+            Section("오늘에 배치할 활동") {
+                ForEach(store.unscheduledActions) { action in
                     VStack(alignment: .leading, spacing: 8) {
                         Text(action.title).font(.headline)
                         Text("\(action.estimatedMinutes)분").font(.caption).foregroundStyle(.secondary)
@@ -54,7 +85,7 @@ struct TodayView: View {
                         .buttonStyle(.bordered)
                     }
                 }
-                if store.actions.isEmpty && !store.isLoading {
+                if store.unscheduledActions.isEmpty && !store.isLoading {
                     Text("선택할 활동이 없습니다. 프로젝트에서 활동을 추가해 보세요.")
                         .foregroundStyle(.secondary)
                 }
@@ -71,6 +102,7 @@ struct TodayView: View {
             dayMode = store.plan?.dayMode ?? "NORMAL"
             note = store.plan?.note ?? ""
             restReason = store.plan?.restReason ?? ""
+            availableMinutes = store.plan?.availableMinutes ?? 120
         }
         .refreshable { await store.load() }
     }
@@ -80,6 +112,21 @@ struct TodayView: View {
         case "LOW": return (0, 1)
         case "HIGH": return (1, 3)
         default: return (1, 2)
+        }
+    }
+}
+
+private struct TodayPlannedActionRow: View {
+    @ObservedObject var store: TodayStore
+    let action: TodayAction
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(action.title).font(.headline)
+            Text("\(LifeOSDate.timeLabel(action.scheduledTime)) · \(action.estimatedMinutes)분").font(.caption).foregroundStyle(.secondary)
+            HStack {
+                Button("완료") { Task { await store.complete(action: action) } }
+                Button("내일로") { Task { await store.moveToTomorrow(action: action) } }
+            }.buttonStyle(.bordered)
         }
     }
 }

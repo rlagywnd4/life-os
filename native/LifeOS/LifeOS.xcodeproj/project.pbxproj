@@ -10,7 +10,10 @@
 		03E8341327A1C5F174C83FFF /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52178A063567B8C8B42C9164 /* DashboardView.swift */; };
 		0D249B9FCC67B2E7D3986275 /* LifeOSMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B068A18149358C2453722D3 /* LifeOSMainView.swift */; };
 		16F7C3E345EFBCAB8FC56620 /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520FEADEF487BC50785CE4C4 /* ProjectsView.swift */; };
+		2267ACD6EDB9258FC6E1ED27 /* CalendarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D77B04B7B9A5E51C7B2E925 /* CalendarStore.swift */; };
 		2733A3AF146E463771A4C6BB /* InboxStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1540CFDD3A48A69EEDD013C2 /* InboxStore.swift */; };
+		2742B86530C804306BA6BAC1 /* CalendarModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BC8309973AFD671FC9668E /* CalendarModelsTests.swift */; };
+		3E65C84DB98D3D11D6141D2B /* CalendarModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91A5F6D2FF2A8E858C18E985 /* CalendarModels.swift */; };
 		3ED8BA0420FD852E0FECED0E /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81914125E65772E0508FCAF /* TodayView.swift */; };
 		40CD643E8CC3F9474D20AF46 /* InboxItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B856AE34114D3F24B789576 /* InboxItem.swift */; };
 		5867939ADC27D786E31C8C28 /* TodayStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E411FC19FDE4D9701F9C77F8 /* TodayStore.swift */; };
@@ -21,6 +24,7 @@
 		7A7CE86A1F10141A6595BF4A /* LifeOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30CFAE8C8819938931A8C88 /* LifeOSApp.swift */; };
 		7BF7FB4F3624DDBF1794A3C7 /* InboxItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E007A8CAE95409C79B607928 /* InboxItemTests.swift */; };
 		83F6372F6DE52807ADD50238 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A00D7DD127452446C051CB4F /* Assets.xcassets */; };
+		A108799A31B2820704D5F0FE /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFF1F01A505887259ED5B6B /* CalendarView.swift */; };
 		A18D922B895C1500C03394EB /* HealthModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77570707CA87C08749EE19E9 /* HealthModelsTests.swift */; };
 		BAD29B539B8217F0CB7687E7 /* ProjectModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9978E976D094607544BD77F /* ProjectModelsTests.swift */; };
 		CFBA99DA5A60A711D422653D /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401FF8B8FEEF640C36E44162 /* MoreView.swift */; };
@@ -46,6 +50,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0D77B04B7B9A5E51C7B2E925 /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
 		1540CFDD3A48A69EEDD013C2 /* InboxStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxStore.swift; sourceTree = "<group>"; };
 		204606372082614D0875D04B /* ProjectsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsStore.swift; sourceTree = "<group>"; };
 		2C4C8DD3C2183D123ECFF56C /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
@@ -59,13 +64,16 @@
 		52178A063567B8C8B42C9164 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		5302A7D3BE33D87A21A3B672 /* LifeOSRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeOSRootView.swift; sourceTree = "<group>"; };
 		59E86585856E4505CB0313E8 /* InboxListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxListView.swift; sourceTree = "<group>"; };
+		5FFF1F01A505887259ED5B6B /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		6FCE39AAA606F42F85113375 /* HealthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthView.swift; sourceTree = "<group>"; };
 		77570707CA87C08749EE19E9 /* HealthModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthModelsTests.swift; sourceTree = "<group>"; };
 		7ACBFCFAFECA365B8A21A73C /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		7B856AE34114D3F24B789576 /* InboxItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxItem.swift; sourceTree = "<group>"; };
 		8671E5190D85581F413D4CC9 /* HealthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthModels.swift; sourceTree = "<group>"; };
+		91A5F6D2FF2A8E858C18E985 /* CalendarModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarModels.swift; sourceTree = "<group>"; };
 		A00D7DD127452446C051CB4F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A7B67B4E5EECE53252F9B882 /* LifeOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LifeOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3BC8309973AFD671FC9668E /* CalendarModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarModelsTests.swift; sourceTree = "<group>"; };
 		BEFCABC03C76A90FFB6D55A6 /* ProjectModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModels.swift; sourceTree = "<group>"; };
 		C0C5C7183B2BCBE3FD0D07B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D802C37E12A6ABA86B78E5BC /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
@@ -93,6 +101,7 @@
 		041D260B3D28B122FCD147FF /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				B3BC8309973AFD671FC9668E /* CalendarModelsTests.swift */,
 				77570707CA87C08749EE19E9 /* HealthModelsTests.swift */,
 				E007A8CAE95409C79B607928 /* InboxItemTests.swift */,
 				51DC97E275F880ECF4BC76F9 /* LoginFailureMessageTests.swift */,
@@ -133,6 +142,7 @@
 			isa = PBXGroup;
 			children = (
 				FF1076D84BAA80406F693812 /* Auth */,
+				D92754E6A46B7512E8077C06 /* Calendar */,
 				D359F2B8BD34D2AF1BD09097 /* Dashboard */,
 				EF450A85BD4FB4EF17BE5F85 /* Health */,
 				BF141346A6625880A31ABE3A /* Inbox */,
@@ -204,6 +214,16 @@
 				52178A063567B8C8B42C9164 /* DashboardView.swift */,
 			);
 			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		D92754E6A46B7512E8077C06 /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				91A5F6D2FF2A8E858C18E985 /* CalendarModels.swift */,
+				0D77B04B7B9A5E51C7B2E925 /* CalendarStore.swift */,
+				5FFF1F01A505887259ED5B6B /* CalendarView.swift */,
+			);
+			path = Calendar;
 			sourceTree = "<group>";
 		};
 		E3E864CA5403ADA09E1B3C4A = {
@@ -357,6 +377,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2742B86530C804306BA6BAC1 /* CalendarModelsTests.swift in Sources */,
 				A18D922B895C1500C03394EB /* HealthModelsTests.swift in Sources */,
 				7BF7FB4F3624DDBF1794A3C7 /* InboxItemTests.swift in Sources */,
 				F1834E4846574438197B9BD6 /* LoginFailureMessageTests.swift in Sources */,
@@ -368,6 +389,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E65C84DB98D3D11D6141D2B /* CalendarModels.swift in Sources */,
+				2267ACD6EDB9258FC6E1ED27 /* CalendarStore.swift in Sources */,
+				A108799A31B2820704D5F0FE /* CalendarView.swift in Sources */,
 				03E8341327A1C5F174C83FFF /* DashboardView.swift in Sources */,
 				E35352FCA426954C2D3342DF /* HealthModels.swift in Sources */,
 				FCCB61A4A32B5ACA7161F8DC /* HealthStore.swift in Sources */,

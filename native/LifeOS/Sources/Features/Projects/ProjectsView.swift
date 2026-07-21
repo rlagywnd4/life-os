@@ -102,6 +102,10 @@ private struct ActionDetailView: View {
                     if let description = action.description, !description.isEmpty { Text(description) }
                     LabeledContent("상태", value: action.statusLabel)
                     LabeledContent("예상 시간", value: "\(action.estimatedMinutes)분")
+                    if let scheduledDate = action.scheduledDate {
+                        LabeledContent("실행", value: "\(scheduledDate) · \(LifeOSDate.timeLabel(action.scheduledTime))")
+                    }
+                    if let dueDate = action.dueDate { LabeledContent("마감", value: dueDate) }
                     Button(action.status == "DONE" ? "미완료로 되돌리기" : "활동 완료") {
                         Task { _ = await store.toggleCompletion(action) }
                     }
@@ -155,12 +159,39 @@ private struct ActionEditorView: View {
     @State private var description: String
     @State private var minutes: Int
     @State private var parentId: UUID?
-    init(store: ProjectsStore, project: LifeProject, item: ProjectAction? = nil, initialParentId: UUID? = nil) { self.store = store; self.project = project; self.item = item; _title = State(initialValue: item?.title ?? ""); _description = State(initialValue: item?.description ?? ""); _minutes = State(initialValue: item?.estimatedMinutes ?? 30); _parentId = State(initialValue: item?.parentActionId ?? initialParentId) }
+    @State private var hasScheduledDate: Bool
+    @State private var scheduledDate: Date
+    @State private var hasScheduledTime: Bool
+    @State private var scheduledTime: Date
+    @State private var hasDueDate: Bool
+    @State private var dueDate: Date
+    init(store: ProjectsStore, project: LifeProject, item: ProjectAction? = nil, initialParentId: UUID? = nil) {
+        self.store = store; self.project = project; self.item = item
+        _title = State(initialValue: item?.title ?? ""); _description = State(initialValue: item?.description ?? "")
+        _minutes = State(initialValue: item?.estimatedMinutes ?? 30); _parentId = State(initialValue: item?.parentActionId ?? initialParentId)
+        _hasScheduledDate = State(initialValue: item?.scheduledDate != nil)
+        _scheduledDate = State(initialValue: LifeOSDate.date(item?.scheduledDate) ?? Date())
+        _hasScheduledTime = State(initialValue: item?.scheduledTime != nil)
+        _scheduledTime = State(initialValue: LifeOSDate.time(item?.scheduledTime) ?? Date())
+        _hasDueDate = State(initialValue: item?.dueDate != nil)
+        _dueDate = State(initialValue: LifeOSDate.date(item?.dueDate) ?? Date())
+    }
     var body: some View {
         Form {
             TextField("활동 제목", text: $title)
             TextField("설명", text: $description, axis: .vertical)
             Stepper("예상 시간 \(minutes)분", value: $minutes, in: 5...480, step: 5)
+            Section("실행 계획") {
+                Toggle("실행일 지정", isOn: $hasScheduledDate)
+                if hasScheduledDate {
+                    DatePicker("실행일", selection: $scheduledDate, displayedComponents: .date)
+                    Toggle("시간 지정", isOn: $hasScheduledTime)
+                    if hasScheduledTime { DatePicker("시작 시간", selection: $scheduledTime, displayedComponents: .hourAndMinute) }
+                }
+                Toggle("마감일 지정", isOn: $hasDueDate)
+                if hasDueDate { DatePicker("마감일", selection: $dueDate, displayedComponents: .date) }
+                Text("실행일을 정한 활동만 달력에 표시됩니다.").font(.caption).foregroundStyle(.secondary)
+            }
             Picker("부모 활동", selection: $parentId) {
                 Text("없음").tag(UUID?.none)
                 ForEach(store.parentCandidates(for: item, in: project)) { candidate in
@@ -170,6 +201,6 @@ private struct ActionEditorView: View {
             if let error = store.errorMessage { Text(error).foregroundStyle(.red) }
         }
         .navigationTitle(item == nil ? "활동 추가" : "활동 수정")
-        .toolbar { ToolbarItem(placement: .confirmationAction) { Button("저장") { Task { if await store.saveAction(project: project, item: item, parentId: parentId, title: title, description: description, minutes: minutes) { dismiss() } } }.disabled(store.isSaving) } }
+        .toolbar { ToolbarItem(placement: .confirmationAction) { Button("저장") { Task { if await store.saveAction(project: project, item: item, parentId: parentId, title: title, description: description, minutes: minutes, scheduledDate: hasScheduledDate ? scheduledDate : nil, scheduledTime: hasScheduledDate && hasScheduledTime ? scheduledTime : nil, dueDate: hasDueDate ? dueDate : nil) { dismiss() } } }.disabled(store.isSaving) } }
     }
 }

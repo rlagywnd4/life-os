@@ -1,4 +1,10 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
 
 export type Database = {
   public: {
@@ -15,7 +21,9 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["profiles"]["Row"]> & { id: string };
+        Insert: Partial<Database["public"]["Tables"]["profiles"]["Row"]> & {
+          id: string;
+        };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Row"]>;
         Relationships: [];
       };
@@ -32,7 +40,9 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["inbox_items"]["Row"]> & { title: string };
+        Insert: Partial<Database["public"]["Tables"]["inbox_items"]["Row"]> & {
+          title: string;
+        };
         Update: Partial<Database["public"]["Tables"]["inbox_items"]["Row"]>;
         Relationships: [];
       };
@@ -54,7 +64,9 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["projects"]["Row"]> & { title: string };
+        Insert: Partial<Database["public"]["Tables"]["projects"]["Row"]> & {
+          title: string;
+        };
         Update: Partial<Database["public"]["Tables"]["projects"]["Row"]>;
         Relationships: [];
       };
@@ -70,6 +82,8 @@ export type Database = {
           status: string;
           priority: number;
           scheduled_date: string | null;
+          scheduled_time: string | null;
+          due_date: string | null;
           completed_at: string | null;
           created_at: string;
           updated_at: string;
@@ -90,10 +104,13 @@ export type Database = {
           day_mode: string;
           note: string | null;
           rest_reason: string | null;
+          available_minutes: number | null;
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["daily_plans"]["Row"]> & { plan_date: string };
+        Insert: Partial<Database["public"]["Tables"]["daily_plans"]["Row"]> & {
+          plan_date: string;
+        };
         Update: Partial<Database["public"]["Tables"]["daily_plans"]["Row"]>;
         Relationships: [];
       };
@@ -110,11 +127,56 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["daily_plan_actions"]["Row"]> & {
+        Insert: Partial<
+          Database["public"]["Tables"]["daily_plan_actions"]["Row"]
+        > & {
           daily_plan_id: string;
           action_item_id: string;
         };
-        Update: Partial<Database["public"]["Tables"]["daily_plan_actions"]["Row"]>;
+        Update: Partial<
+          Database["public"]["Tables"]["daily_plan_actions"]["Row"]
+        >;
+        Relationships: [];
+      };
+      calendar_events: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          description: string | null;
+          event_date: string;
+          start_time: string | null;
+          end_time: string | null;
+          is_all_day: boolean;
+          category: "GENERAL" | "APPOINTMENT" | "TRAVEL" | "MILESTONE";
+          location: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<
+          Database["public"]["Tables"]["calendar_events"]["Row"]
+        > & { title: string; event_date: string };
+        Update: Partial<Database["public"]["Tables"]["calendar_events"]["Row"]>;
+        Relationships: [];
+      };
+      action_schedule_changes: {
+        Row: {
+          id: string;
+          user_id: string;
+          action_item_id: string;
+          previous_date: string | null;
+          previous_time: string | null;
+          new_date: string | null;
+          new_time: string | null;
+          reason: string | null;
+          created_at: string;
+        };
+        Insert: Partial<
+          Database["public"]["Tables"]["action_schedule_changes"]["Row"]
+        > & { action_item_id: string };
+        Update: Partial<
+          Database["public"]["Tables"]["action_schedule_changes"]["Row"]
+        >;
         Relationships: [];
       };
       someday_items: {
@@ -130,7 +192,9 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["someday_items"]["Row"]> & { title: string };
+        Insert: Partial<
+          Database["public"]["Tables"]["someday_items"]["Row"]
+        > & { title: string };
         Update: Partial<Database["public"]["Tables"]["someday_items"]["Row"]>;
         Relationships: [];
       };
@@ -152,7 +216,9 @@ export type Database = {
           updated_at: string;
           completed_at: string | null;
         };
-        Insert: Partial<Database["public"]["Tables"]["weekly_reviews"]["Row"]> & {
+        Insert: Partial<
+          Database["public"]["Tables"]["weekly_reviews"]["Row"]
+        > & {
           week_start_date: string;
           week_end_date: string;
         };
@@ -181,7 +247,9 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["health_profiles"]["Row"]> & {
+        Insert: Partial<
+          Database["public"]["Tables"]["health_profiles"]["Row"]
+        > & {
           current_weight_kg: number;
           target_weight_kg: number;
         };
@@ -200,11 +268,15 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["health_weight_goals"]["Row"]> & {
+        Insert: Partial<
+          Database["public"]["Tables"]["health_weight_goals"]["Row"]
+        > & {
           target_weight_kg: number;
           goal_name: string;
         };
-        Update: Partial<Database["public"]["Tables"]["health_weight_goals"]["Row"]>;
+        Update: Partial<
+          Database["public"]["Tables"]["health_weight_goals"]["Row"]
+        >;
         Relationships: [];
       };
       health_check_ins: {
@@ -229,10 +301,14 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["health_check_ins"]["Row"]> & {
+        Insert: Partial<
+          Database["public"]["Tables"]["health_check_ins"]["Row"]
+        > & {
           check_in_date: string;
         };
-        Update: Partial<Database["public"]["Tables"]["health_check_ins"]["Row"]>;
+        Update: Partial<
+          Database["public"]["Tables"]["health_check_ins"]["Row"]
+        >;
         Relationships: [];
       };
       life_context_documents: {
@@ -249,12 +325,16 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["life_context_documents"]["Row"]> & {
+        Insert: Partial<
+          Database["public"]["Tables"]["life_context_documents"]["Row"]
+        > & {
           version: string;
           title: string;
           content_markdown: string;
         };
-        Update: Partial<Database["public"]["Tables"]["life_context_documents"]["Row"]>;
+        Update: Partial<
+          Database["public"]["Tables"]["life_context_documents"]["Row"]
+        >;
         Relationships: [];
       };
       life_context_entries: {
@@ -272,13 +352,17 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["life_context_entries"]["Row"]> & {
+        Insert: Partial<
+          Database["public"]["Tables"]["life_context_entries"]["Row"]
+        > & {
           document_id: string;
           entry_key: string;
           title: string;
           category: string;
         };
-        Update: Partial<Database["public"]["Tables"]["life_context_entries"]["Row"]>;
+        Update: Partial<
+          Database["public"]["Tables"]["life_context_entries"]["Row"]
+        >;
         Relationships: [];
       };
     };
@@ -301,6 +385,15 @@ export type Database = {
           make_core: boolean;
         };
         Returns: string;
+      };
+      reschedule_action: {
+        Args: {
+          action_id: string;
+          target_date: string;
+          target_time?: string | null;
+          change_reason?: string | null;
+        };
+        Returns: undefined;
       };
     };
     Enums: Record<string, never>;

@@ -8,11 +8,17 @@ private struct ActionMutation: Encodable {
     let title: String
     let description: String?
     let estimatedMinutes: Int
+    let scheduledDate: String?
+    let scheduledTime: String?
+    let dueDate: String?
     enum CodingKeys: String, CodingKey {
         case projectId = "project_id"
         case parentActionId = "parent_action_id"
         case title, description
         case estimatedMinutes = "estimated_minutes"
+        case scheduledDate = "scheduled_date"
+        case scheduledTime = "scheduled_time"
+        case dueDate = "due_date"
     }
 }
 private struct ActionUpdateMutation: Encodable {
@@ -20,10 +26,16 @@ private struct ActionUpdateMutation: Encodable {
     let title: String
     let description: String?
     let estimatedMinutes: Int
+    let scheduledDate: String?
+    let scheduledTime: String?
+    let dueDate: String?
     enum CodingKeys: String, CodingKey {
         case parentActionId = "parent_action_id"
         case title, description
         case estimatedMinutes = "estimated_minutes"
+        case scheduledDate = "scheduled_date"
+        case scheduledTime = "scheduled_time"
+        case dueDate = "due_date"
     }
 }
 private struct ActionCompletionMutation: Encodable { let status: String; let completedAt: String?; enum CodingKeys: String, CodingKey { case status; case completedAt = "completed_at" } }
@@ -46,7 +58,7 @@ final class ProjectsStore: ObservableObject {
         defer { isLoading = false }
         do {
             async let projectRows: [LifeProject] = client.from("projects").select("id,title,description,reason,desired_outcome,status,updated_at").order("updated_at", ascending: false).execute().value
-            async let actionRows: [ProjectAction] = client.from("action_items").select("id,project_id,parent_action_id,title,description,estimated_minutes,status,completed_at").order("created_at", ascending: true).execute().value
+            async let actionRows: [ProjectAction] = client.from("action_items").select("id,project_id,parent_action_id,title,description,estimated_minutes,status,scheduled_date,scheduled_time,due_date,completed_at").order("created_at", ascending: true).execute().value
             async let profiles: [ProjectLimitProfile] = client.from("profiles").select("max_active_projects").limit(1).execute().value
             projects = try await projectRows; actions = try await actionRows; maxActiveProjects = try await profiles.first?.maxActiveProjects ?? 3
         } catch { errorMessage = "프로젝트를 불러오지 못했습니다." }
@@ -114,13 +126,17 @@ final class ProjectsStore: ObservableObject {
         await mutate { try await self.client.from("projects").update(ProjectStatusMutation(status: status)).eq("id", value: project.id.uuidString).execute() }
     }
 
-    func saveAction(project: LifeProject, item: ProjectAction?, parentId: UUID?, title: String, description: String, minutes: Int) async -> Bool {
+    func saveAction(project: LifeProject, item: ProjectAction?, parentId: UUID?, title: String, description: String, minutes: Int,
+                    scheduledDate: Date?, scheduledTime: Date?, dueDate: Date?) async -> Bool {
         let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !title.isEmpty else { errorMessage = "활동 제목을 입력해 주세요."; return false }
+        let scheduleDateValue = scheduledDate.map(LifeOSDate.string)
+        let scheduleTimeValue = scheduledDate != nil ? scheduledTime.map { LifeOSDate.timeFormatter.string(from: $0) } : nil
+        let dueDateValue = dueDate.map(LifeOSDate.string)
         if let item {
-            return await mutate { try await self.client.from("action_items").update(ActionUpdateMutation(parentActionId: parentId?.uuidString, title: title, description: description.isEmpty ? nil : description, estimatedMinutes: minutes)).eq("id", value: item.id.uuidString).eq("project_id", value: project.id.uuidString).execute() }
+            return await mutate { try await self.client.from("action_items").update(ActionUpdateMutation(parentActionId: parentId?.uuidString, title: title, description: description.isEmpty ? nil : description, estimatedMinutes: minutes, scheduledDate: scheduleDateValue, scheduledTime: scheduleTimeValue, dueDate: dueDateValue)).eq("id", value: item.id.uuidString).eq("project_id", value: project.id.uuidString).execute() }
         }
-        return await mutate { try await self.client.from("action_items").insert(ActionMutation(projectId: project.id.uuidString, parentActionId: parentId?.uuidString, title: title, description: description.isEmpty ? nil : description, estimatedMinutes: minutes)).execute() }
+        return await mutate { try await self.client.from("action_items").insert(ActionMutation(projectId: project.id.uuidString, parentActionId: parentId?.uuidString, title: title, description: description.isEmpty ? nil : description, estimatedMinutes: minutes, scheduledDate: scheduleDateValue, scheduledTime: scheduleTimeValue, dueDate: dueDateValue)).execute() }
     }
 
     func toggleCompletion(_ action: ProjectAction) async -> Bool {
