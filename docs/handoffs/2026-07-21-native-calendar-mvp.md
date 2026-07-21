@@ -1,7 +1,7 @@
 # Native Calendar MVP
 
 Date: 2026-07-21
-Status: Implemented locally, production migration and device verification pending
+Status: Implemented and production contract verified, device verification pending
 
 ## 작업 목표
 
@@ -64,13 +64,11 @@ Status: Implemented locally, production migration and device verification pendin
 
 ## 남은 문제
 
-- 운영 Supabase migration 적용 전에는 새 필드와 일정 API를 사용할 수 없다.
 - 실제 기기에서 드래그 앤 드롭과 일정 편집을 아직 조작 검증하지 않았다.
 - 웹 달력은 아직 구현하지 않았다.
 
 ## 다음 작업 후보
 
-- 운영 migration 및 임시 계정 계약 검증.
 - 실제 iPhone·Mac UI 확인 후 레이아웃 보정.
 - 웹 달력 구현.
 - 반복 일정 편집 정책 설계.
@@ -85,3 +83,5 @@ Status: Implemented locally, production migration and device verification pendin
 - Next.js production build 통과.
 - Mac LifeOS scheme 단위 테스트 통과.
 - generic iOS 대상 서명 없는 빌드 통과.
+- GitHub Actions 실행 `29873362311`에서 테스트·빌드·migration dry-run·운영 적용 통과.
+- 운영 Supabase 임시 사용자로 프로젝트·활동·일정 생성, 일정 조회, 활동 재배치, 시간 미정 전환, 마감일 유지, 재배치 이력 기록을 확인하고 테스트 사용자를 삭제함.
