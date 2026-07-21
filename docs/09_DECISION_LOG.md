@@ -37,6 +37,150 @@ PRD Impact:
 - PRD 반영 필요 여부.
 ```
 
+## 2026-07-20 - 네이티브 인증 메일은 앱 전용 딥링크로 복귀
+
+Status: Accepted
+Scope: Engineering / UX / Security
+
+Context:
+
+- 웹에 있던 회원가입·비밀번호 재설정 기능을 iPhone과 Mac에서도 완료하려면 Supabase 인증 메일 링크가 네이티브 앱으로 돌아와야 한다.
+- 기존 웹 URL로 돌아가면 비밀번호 변경은 가능하지만 네이티브 전환 이후에도 인증 완료를 위해 브라우저에 의존한다.
+
+Decision:
+
+- 네이티브 앱에 `lifeos` URL scheme을 등록한다.
+- 가입 확인은 `lifeos://auth-callback`, 비밀번호 재설정은 `lifeos://reset-password`를 사용한다.
+- 콜백 세션은 Supabase SDK가 검증하고, 재설정 콜백일 때만 새 비밀번호 입력 화면을 연다.
+
+Rationale:
+
+- iPhone과 Mac이 같은 콜백 계약을 공유하고 인증 흐름을 앱 안에서 마칠 수 있다.
+- 인증 코드와 세션 처리를 직접 구현하지 않고 기존 Supabase PKCE 처리를 재사용한다.
+
+Alternatives:
+
+- 웹 URL로만 복귀하는 방식은 네이티브 사용자 흐름이 끊겨 제외했다.
+- Universal Link는 별도 웹 도메인 연동과 Associated Domains 설정이 필요해 개인용 V1에는 과도하므로 제외했다.
+
+Impact:
+
+- Supabase Auth Redirect URL 허용 목록에 두 `lifeos://` 주소를 한 번 등록해야 한다.
+- 동일 URL scheme을 사용하는 다른 앱이 설치될 가능성을 고려해, 공개 배포로 전환할 때는 Universal Link를 다시 검토한다.
+
+PRD Impact:
+
+- 없음. 기존 인증 기능을 네이티브에서 완결하기 위한 구현 결정이다.
+
+## 2026-07-19 - 네이티브 Inbox 읽기는 웹과 같은 전체 상태 목록을 사용
+
+Status: Accepted
+Scope: Product / UX / Engineering
+
+Context:
+
+- 웹 Inbox는 미검토 여부와 관계없이 사용자의 모든 Inbox 기록을 상태와 함께 표시한다.
+- 첫 네이티브 구현은 `UNREVIEWED`로 한정해, 기존 웹에서 프로젝트 전환·언젠가·폐기·보관된 항목만 있는 경우 앱이 비어 보였다.
+
+Decision:
+
+- 네이티브 Inbox도 상태 필터 없이 사용자의 모든 `inbox_items`를 최신순으로 읽는다.
+- 각 행에 카테고리와 Inbox 상태를 함께 표시한다.
+
+Rationale:
+
+- 같은 계정의 웹과 네이티브에서 Inbox라는 단어가 가리키는 범위를 일치시킨다.
+- 상태별 필터는 이후 검색·필터 기능과 함께 추가할 수 있다.
+
+Alternatives:
+
+- 미검토 항목만 보여주는 방식은 오늘의 검토 흐름에는 간결하지만, 기존 기록이 사라진 것처럼 보여 첫 사용 검증을 방해하므로 제외했다.
+
+Impact:
+
+- 데이터베이스와 API는 바꾸지 않는다.
+- 항목 수가 많아지면 상태·카테고리 필터와 검색을 다음 범위에서 추가한다.
+
+PRD Impact:
+
+- 없음. 기존 웹의 Inbox 표현 범위를 네이티브에 맞춘 구현 결정이다.
+
+## 2026-07-19 - 개인 기기 전용 원클릭 로그인은 로컬 설정에서만 허용
+
+Status: Accepted
+Scope: Engineering / UX / Security
+
+Context:
+
+- 네이티브 LifeOS는 한 사람이 Mac과 iPhone에서 사용하는 개인 도구이며, 매번 이메일과 비밀번호를 입력하는 것은 첫 사용 흐름을 방해한다.
+- Supabase 세션은 로그인 후 유지되지만, 새 기기 또는 세션이 만료된 경우에는 다시 로그인해야 한다.
+
+Decision:
+
+- `Secrets.xcconfig`에 선택적으로 설정한 개인 이메일·비밀번호가 있을 때만 "내 계정으로 로그인" 버튼을 표시한다.
+- 해당 파일은 Git에서 제외하며, 코드·예제·PR·로그에 실제 자격 증명을 기록하지 않는다.
+- 기존의 직접 이메일·비밀번호 로그인도 유지한다.
+
+Rationale:
+
+- 개인 기기에서 한 번의 동작으로 기존 Supabase 계정에 로그인할 수 있다.
+- 저장소에 비밀번호를 넣지 않고, 다른 환경에서는 설정을 생략해 원클릭 버튼을 표시하지 않을 수 있다.
+
+Alternatives:
+
+- 코드에 이메일과 비밀번호를 고정하는 방식은 공개 저장소에 자격 증명이 노출되므로 제외했다.
+- Magic Link는 이메일 앱을 다시 열어야 해 현재 목표인 한 번의 동작을 만족하지 못해 제외했다.
+
+Impact:
+
+- 개인 설정의 비밀번호는 설치된 개인 앱 번들에 포함된다. 기기를 타인과 공유하거나 배포용 앱을 만들 때는 이 설정을 비워야 한다.
+- 향후 Keychain 기반 계정 설정 화면을 만들면 앱 번들에 비밀번호를 포함하지 않는 방식으로 대체할 수 있다.
+
+PRD Impact:
+
+- 없음. 개인 기기의 로그인 편의 구현에 관한 결정이다.
+
+## 2026-07-18 - 네이티브 V1은 공용 SwiftUI와 기존 Supabase를 직접 사용
+
+Status: Accepted
+Scope: Product / Engineering / Data / UX / Security
+
+Context:
+
+- LifeOS는 개인이 iPhone과 Mac에서 사용하는 도구이며, 두 기기 사이의 최신 데이터를 기존 Supabase로 공유해야 한다.
+- 오프라인 우선, SwiftData, 유료 iCloud 동기화는 현재 V1 요구사항이 아니다.
+- 첫 전환 범위는 전체 웹앱 복제가 아니라 로그인 후 기존 Inbox를 빠르게 확인하는 세로 흐름이다.
+
+Decision:
+
+- iOS 18과 macOS 15를 지원하는 하나의 SwiftUI 공용 앱을 만든다. Mac은 사이드바/상세 화면, iPhone은 목록 중심 탐색을 사용한다.
+- 앱은 `supabase-swift`로 기존 Supabase Auth와 Data API에 직접 연결한다. Supabase는 계속 단일 원본 데이터와 기기 간 동기화 계층이다.
+- 첫 구현은 이메일·비밀번호 로그인과 본인 `UNREVIEWED` Inbox 조회만 포함한다. 회원가입, 비밀번호 재설정, Inbox 변경, 검색, 실시간 갱신은 다음 범위로 남긴다.
+- URL과 publishable key는 추적하지 않는 Xcode 설정 파일에서만 읽는다. service role key는 앱에 넣지 않으며, 기존 RLS를 데이터 격리 기준으로 유지한다.
+- 생성된 Xcode 프로젝트와 의존성 잠금 파일을 저장소에 포함하고, XcodeGen 설정 파일을 그 원본으로 함께 관리한다.
+
+Rationale:
+
+- 하나의 모델과 기능 코드를 공유하면서도 각 기기의 탐색 밀도에 맞는 UI를 제공할 수 있다.
+- 이미 운영 중인 Supabase 인증·RLS·데이터 구조를 재사용하면 새 동기화 계층이나 데이터 이전 없이 두 기기가 같은 내용을 볼 수 있다.
+- 비밀 설정을 저장소에서 분리하면 공개 저장소와 PR 기록에 개인 연결 정보가 남지 않는다.
+
+Alternatives:
+
+- WKWebView로 웹앱을 감싸는 방식은 네이티브 화면 구조와 이후 기기 기능 통합의 기반이 되지 않아 선택하지 않았다.
+- SwiftData와 CloudKit을 원본으로 삼는 방식은 오프라인 우선·iCloud 동기화를 지금 도입해야 하므로 제외했다.
+- 서비스 역할 키를 네이티브 앱에 넣는 방식은 모든 사용자 데이터 접근 권한을 노출하므로 제외했다.
+
+Impact:
+
+- 기존 웹, Supabase 데이터베이스, API 계약은 변경하지 않는다.
+- 네이티브 앱은 기존 `inbox_items`의 RLS 정책을 그대로 적용받는다.
+- 실제 기기 실행 전에는 개인 로컬 설정에 Supabase URL과 publishable key를 넣고 iPhone 서명을 설정해야 한다.
+
+PRD Impact:
+
+- 없음. PRD의 방향을 바꾸지 않고 V1의 구현 경로를 구체화한 결정이다.
+
 ## 2026-07-17 - 네이티브 AI는 V1 이후 생각 정리 기능으로 분리
 
 Status: Accepted

@@ -1,0 +1,178 @@
+import Foundation
+import Supabase
+
+private struct InboxMutation: Encodable {
+    let title: String
+    let description: String?
+    let category: String
+}
+
+private struct InboxUpdateMutation: Encodable {
+    let title: String
+    let description: String?
+    let category: String
+    let status: String
+}
+
+private struct ConvertInboxParameters: Encodable {
+    let inboxId: String
+    let projectTitle: String
+    let projectReason: String
+    let projectDesiredOutcome: String
+    let activateNow: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case inboxId = "inbox_id"
+        case projectTitle = "project_title"
+        case projectReason = "project_reason"
+        case projectDesiredOutcome = "project_desired_outcome"
+        case activateNow = "activate_now"
+    }
+}
+
+@MainActor
+final class InboxStore: ObservableObject {
+    enum State: Equatable {
+        case idle
+        case loading
+        case loaded([InboxItem])
+        case failed(String)
+    }
+
+    @Published private(set) var state: State = .idle
+    @Published private(set) var isSaving = false
+    @Published private(set) var mutationError: String?
+
+    private let client: SupabaseClient
+
+    init(client: SupabaseClient) {
+        self.client = client
+    }
+
+    func load() async {
+        if case .loaded(let items) = state {
+            state = .loading
+            await fetch(preserving: items)
+        } else {
+            state = .loading
+            await fetch(preserving: [])
+        }
+    }
+
+    func create(title: String, description: String, category: String) async -> Bool {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
+            mutationError = "Inbox 제목을 입력해 주세요."
+            return false
+        }
+        return await performMutation {
+            try await self.client.from("inbox_items").insert(
+                InboxMutation(
+                    title: trimmedTitle,
+                    description: description.isEmpty ? nil : description,
+                    category: category
+                )
+            ).execute()
+        }
+    }
+
+    func update(
+        _ item: InboxItem,
+        title: String,
+        description: String,
+        category: String,
+        status: String
+    ) async -> Bool {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
+            mutationError = "Inbox 제목을 입력해 주세요."
+            return false
+        }
+        let allowedStatuses = item.canEditStatus
+            ? Set(InboxItem.editableStatuses)
+            : Set([item.status])
+        guard allowedStatuses.contains(status) else {
+            mutationError = "선택할 수 없는 Inbox 상태입니다."
+            return false
+        }
+        return await performMutation {
+            try await self.client.from("inbox_items").update(
+                InboxUpdateMutation(
+                    title: trimmedTitle,
+                    description: description.isEmpty ? nil : description,
+                    category: category,
+                    status: status
+                )
+            )
+                .eq("id", value: item.id.uuidString)
+                .execute()
+        }
+    }
+
+    func delete(_ item: InboxItem) async -> Bool {
+        await performMutation {
+            try await self.client.from("inbox_items")
+                .delete()
+                .eq("id", value: item.id.uuidString)
+                .execute()
+        }
+    }
+
+    func convertToProject(
+        _ item: InboxItem,
+        title: String,
+        reason: String,
+        desiredOutcome: String,
+        activateNow: Bool
+    ) async -> Bool {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTitle.isEmpty else {
+            mutationError = "프로젝트 제목을 입력해 주세요."
+            return false
+        }
+        return await performMutation {
+            try await self.client.rpc(
+                "convert_inbox_to_project",
+                params: ConvertInboxParameters(
+                    inboxId: item.id.uuidString,
+                    projectTitle: trimmedTitle,
+                    projectReason: reason,
+                    projectDesiredOutcome: desiredOutcome,
+                    activateNow: activateNow
+                )
+            ).execute()
+        }
+    }
+
+    private func performMutation(_ operation: () async throws -> Void) async -> Bool {
+        isSaving = true
+        mutationError = nil
+        defer { isSaving = false }
+        do {
+            try await operation()
+            await load()
+            return true
+        } catch {
+            mutationError = "저장하지 못했습니다. 인터넷 연결과 Supabase 설정을 확인해 주세요."
+            return false
+        }
+    }
+
+    private func fetch(preserving existingItems: [InboxItem]) async {
+        do {
+            let items: [InboxItem] = try await client
+                .from("inbox_items")
+                .select("id,title,description,category,status,created_at,updated_at")
+                .order("created_at", ascending: false)
+                .execute()
+                .value
+            state = .loaded(items)
+        } catch {
+            if existingItems.isEmpty {
+                state = .failed("Inbox를 불러오지 못했습니다. 연결을 확인한 뒤 다시 시도하세요.")
+            } else {
+                state = .loaded(existingItems)
+            }
+        }
+    }
+}
