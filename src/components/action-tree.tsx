@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ActionButton } from "@/components/action-button";
-import { updateActionCompletion } from "@/features/projects/actions";
+import { moveActionItem, setNextAction, updateActionCompletion } from "@/features/projects/actions";
 import { actionStatusLabels, getDisplayLabel } from "@/lib/display-labels";
 import { buildActionTree, type ActionTreeNode } from "@/lib/domain/action-tree";
 import type { Database } from "@/types/database";
@@ -20,6 +20,10 @@ export type ActionTreeItem = Pick<
   | "status"
   | "completed_at"
   | "created_at"
+  | "is_stage"
+  | "scheduled_date"
+  | "scheduled_time"
+  | "due_date"
 >;
 
 type ActionTreeProps = {
@@ -27,6 +31,7 @@ type ActionTreeProps = {
   actions: ActionTreeItem[];
   rootParentId?: string | null;
   emptyMessage?: string;
+  nextActionId?: string | null;
 };
 
 type TreeNodeProps = {
@@ -34,9 +39,10 @@ type TreeNodeProps = {
   node: ActionTreeNode<ActionTreeItem>;
   collapsedIds: Set<string>;
   onToggle: (id: string) => void;
+  nextActionId?: string | null;
 };
 
-function TreeNode({ projectId, node, collapsedIds, onToggle }: TreeNodeProps) {
+function TreeNode({ projectId, node, collapsedIds, onToggle, nextActionId }: TreeNodeProps) {
   const { action, children, descendantCount, completedDescendantCount } = node;
   const hasChildren = children.length > 0;
   const collapsed = collapsedIds.has(action.id);
@@ -79,7 +85,7 @@ function TreeNode({ projectId, node, collapsedIds, onToggle }: TreeNodeProps) {
                   href={`/projects/${projectId}/actions/${action.id}`}
                   className="font-semibold hover:text-moss hover:underline"
                 >
-                  {action.title}
+                  {action.title}{action.is_stage ? " (단계)" : ""}
                 </Link>
                 {action.description ? (
                   <p className="muted mt-1 line-clamp-2">
@@ -143,6 +149,27 @@ function TreeNode({ projectId, node, collapsedIds, onToggle }: TreeNodeProps) {
                 </form>
               </div>
             ) : null}
+            {!action.is_stage && !hasChildren ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <form action={updateActionCompletion.bind(null, action.id, projectId, action.status !== "DONE")}>
+                  <ActionButton className="btn-secondary" pendingLabel="변경 중">
+                    {action.status === "DONE" ? "미완료로" : "완료"}
+                  </ActionButton>
+                </form>
+                {action.status !== "DONE" ? (
+                  <form action={setNextAction.bind(null, projectId, action.id)}>
+                    <ActionButton className={nextActionId === action.id ? "btn-primary" : "btn-secondary"} pendingLabel="지정 중">
+                      {nextActionId === action.id ? "현재 다음 행동" : "다음 행동으로"}
+                    </ActionButton>
+                  </form>
+                ) : null}
+                {action.scheduled_date ? <span className="status-pill">{action.scheduled_date}{action.scheduled_time ? ` ${action.scheduled_time.slice(0, 5)}` : ""}</span> : null}
+              </div>
+            ) : null}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <form action={moveActionItem.bind(null, action.id, projectId, "UP")}><ActionButton className="btn-secondary" pendingLabel="이동 중">위로</ActionButton></form>
+              <form action={moveActionItem.bind(null, action.id, projectId, "DOWN")}><ActionButton className="btn-secondary" pendingLabel="이동 중">아래로</ActionButton></form>
+            </div>
           </div>
         </div>
       </article>
@@ -156,6 +183,7 @@ function TreeNode({ projectId, node, collapsedIds, onToggle }: TreeNodeProps) {
               node={child}
               collapsedIds={collapsedIds}
               onToggle={onToggle}
+              nextActionId={nextActionId}
             />
           ))}
         </div>
@@ -168,14 +196,30 @@ export function ActionTree({
   projectId,
   actions,
   rootParentId = null,
-  emptyMessage = "등록된 활동이 없습니다."
+  emptyMessage = "등록된 활동이 없습니다.",
+  nextActionId = null
 }: ActionTreeProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(
     () => new Set()
   );
+  const [showCompleted, setShowCompleted] = useState(true);
+  const visibleActions = useMemo(() => {
+    if (showCompleted) return actions;
+    const byId = new Map(actions.map((action) => [action.id, action]));
+    const ids = new Set(actions.filter((action) => action.status !== "DONE").map((action) => action.id));
+    for (const action of actions) {
+      if (action.status === "DONE") continue;
+      let parentId = action.parent_action_id;
+      while (parentId) {
+        ids.add(parentId);
+        parentId = byId.get(parentId)?.parent_action_id ?? null;
+      }
+    }
+    return actions.filter((action) => ids.has(action.id));
+  }, [actions, showCompleted]);
   const nodes = useMemo(
-    () => buildActionTree(actions, rootParentId),
-    [actions, rootParentId]
+    () => buildActionTree(visibleActions, rootParentId),
+    [visibleActions, rootParentId]
   );
 
   function toggle(id: string) {
@@ -187,10 +231,13 @@ export function ActionTree({
     });
   }
 
+  const allIds = actions.map((action) => action.id);
+
   if (nodes.length === 0) return <p className="muted">{emptyMessage}</p>;
 
   return (
     <div className="grid gap-2 overflow-x-auto">
+      <div className="flex flex-wrap gap-2"><button type="button" className="btn-secondary" onClick={() => setCollapsedIds(new Set(allIds))}>모두 접기</button><button type="button" className="btn-secondary" onClick={() => setCollapsedIds(new Set())}>모두 펼치기</button><button type="button" className="btn-secondary" onClick={() => setShowCompleted((current) => !current)}>{showCompleted ? "완료 활동 숨기기" : "완료 활동 보기"}</button></div>
       {nodes.map((node) => (
         <TreeNode
           key={node.action.id}
@@ -198,6 +245,7 @@ export function ActionTree({
           node={node}
           collapsedIds={collapsedIds}
           onToggle={toggle}
+          nextActionId={nextActionId}
         />
       ))}
     </div>

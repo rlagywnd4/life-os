@@ -51,6 +51,10 @@ export type Database = {
           target_date: string | null;
           completed_at: string | null;
           abandoned_reason: string | null;
+          goal: string | null;
+          completion_criteria: string | null;
+          next_action_id: string | null;
+          archived_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -70,6 +74,15 @@ export type Database = {
           status: string;
           priority: number;
           scheduled_date: string | null;
+          scheduled_time: string | null;
+          scheduled_end_time: string | null;
+          is_all_day: boolean;
+          due_date: string | null;
+          started_date: string | null;
+          sort_order: number;
+          is_stage: boolean;
+          actual_minutes: number | null;
+          deleted_at: string | null;
           completed_at: string | null;
           created_at: string;
           updated_at: string;
@@ -79,6 +92,59 @@ export type Database = {
           title: string;
         };
         Update: Partial<Database["public"]["Tables"]["action_items"]["Row"]>;
+        Relationships: [];
+      };
+      project_milestones: {
+        Row: {
+          id: string;
+          user_id: string;
+          project_id: string;
+          action_item_id: string | null;
+          title: string;
+          description: string | null;
+          target_date: string | null;
+          completed_at: string | null;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["project_milestones"]["Row"]> & { project_id: string; title: string };
+        Update: Partial<Database["public"]["Tables"]["project_milestones"]["Row"]>;
+        Relationships: [];
+      };
+      project_records: {
+        Row: {
+          id: string;
+          user_id: string;
+          project_id: string;
+          action_item_id: string | null;
+          milestone_id: string | null;
+          record_type: "NOTE" | "ACTION_COMPLETED" | "PROJECT_STATUS_CHANGED" | "TARGET_DATE_CHANGED" | "PLAN_CHANGED" | "MILESTONE_COMPLETED";
+          content: string;
+          is_system: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["project_records"]["Row"]> & { project_id: string; record_type: Database["public"]["Tables"]["project_records"]["Row"]["record_type"]; content: string };
+        Update: Partial<Database["public"]["Tables"]["project_records"]["Row"]>;
+        Relationships: [];
+      };
+      calendar_events: {
+        Row: {
+          id: string;
+          user_id: string;
+          source_inbox_item_id: string | null;
+          title: string;
+          description: string | null;
+          event_date: string;
+          start_time: string | null;
+          end_time: string | null;
+          is_all_day: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["calendar_events"]["Row"]> & { title: string; event_date: string };
+        Update: Partial<Database["public"]["Tables"]["calendar_events"]["Row"]>;
         Relationships: [];
       };
       daily_plans: {
@@ -293,6 +359,25 @@ export type Database = {
           activate_now: boolean;
         };
         Returns: string;
+      };
+      create_project_plan: {
+        Args: {
+          p_title: string;
+          p_description?: string | null;
+          p_goal?: string | null;
+          p_completion_criteria?: string | null;
+          p_started_date?: string | null;
+          p_target_date?: string | null;
+          p_status?: string;
+          p_stage_titles?: Json;
+          p_first_action_title?: string | null;
+          p_source_inbox_id?: string | null;
+        };
+        Returns: string;
+      };
+      delete_action_item: {
+        Args: { p_action_id: string; p_strategy?: string };
+        Returns: undefined;
       };
       add_core_action_to_today: {
         Args: {

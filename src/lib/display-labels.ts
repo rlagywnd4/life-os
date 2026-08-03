@@ -20,6 +20,7 @@ export const inboxStatusLabels: Record<string, string> = {
 };
 
 export const projectStatusLabels: Record<string, string> = {
+  DRAFT: "초안",
   ACTIVE: "활성",
   WAITING: "대기",
   PAUSED: "일시정지",
@@ -32,6 +33,7 @@ export const actionStatusLabels: Record<string, string> = {
   TODO: "할 일",
   PLANNED: "계획됨",
   IN_PROGRESS: "진행 중",
+  WAITING: "대기 중",
   DONE: "완료",
   SKIPPED: "건너뜀",
   CANCELED: "취소"

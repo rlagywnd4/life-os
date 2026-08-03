@@ -1,107 +1,50 @@
 import { notFound } from "next/navigation";
+import { Archive, CalendarPlus, CheckCircle2, Flag, Plus } from "lucide-react";
 import { ActionButton } from "@/components/action-button";
 import { ActionTree } from "@/components/action-tree";
-import {
-  createActionItem,
-  updateProjectStatus
-} from "@/features/projects/actions";
+import { createActionItem, deleteMilestone, deleteProjectNote, saveMilestone, saveProjectNote, setNextAction, toggleMilestone, updateActionCompletion, updateProject, updateProjectStatus } from "@/features/projects/actions";
 import { getDisplayLabel, projectStatusLabels } from "@/lib/display-labels";
+import { calculateProjectProgress, getProjectPlanningGaps, getSuggestedNextAction } from "@/lib/domain/project-planning";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function ProjectDetailPage({
-  params
-}: {
-  params: Promise<{ id: string }>;
-}) {
+const editableStatuses = ["DRAFT", "ACTIVE", "WAITING", "PAUSED", "COMPLETED", "ABANDONED", "ARCHIVED"];
+
+export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data: project } = supabase
-    ? await supabase.from("projects").select("*").eq("id", id).single()
-    : { data: null };
+  const [{ data: project }, { data: actionRows }, { data: milestoneRows }, { data: recordRows }] = supabase ? await Promise.all([
+    supabase.from("projects").select("*").eq("id", id).single(),
+    supabase.from("action_items").select("*").eq("project_id", id).is("deleted_at", null).order("sort_order").order("created_at"),
+    supabase.from("project_milestones").select("*").eq("project_id", id).order("target_date").order("sort_order"),
+    supabase.from("project_records").select("*").eq("project_id", id).order("created_at", { ascending: false }).limit(30)
+  ]) : [{ data: null }, { data: [] }, { data: [] }, { data: [] }];
   if (!project) notFound();
-  const { data: actionRows } = supabase
-    ? await supabase
-        .from("action_items")
-        .select("*")
-        .eq("project_id", id)
-        .order("created_at")
-    : { data: [] };
   const actions = actionRows ?? [];
+  const milestones = milestoneRows ?? [];
+  const records = recordRows ?? [];
+  const progress = calculateProjectProgress(actions, milestones, project.status);
+  const currentNextAction = actions.find((action) => action.id === project.next_action_id) ?? null;
+  const suggestedNextAction = getSuggestedNextAction(actions);
+  const nextAction = currentNextAction ?? suggestedNextAction;
+  const gaps = getProjectPlanningGaps(project, actions);
+  const canPlan = !["COMPLETED", "ABANDONED", "ARCHIVED"].includes(project.status);
+  const scheduledActions = actions.filter((action) => action.scheduled_date).sort((left, right) => `${left.scheduled_date}${left.scheduled_time ?? ""}`.localeCompare(`${right.scheduled_date}${right.scheduled_time ?? ""}`));
 
-  return (
-    <div className="grid gap-6">
-      <header className="panel">
-        <div className="mb-3 flex flex-wrap gap-2">
-          <span className="status-pill">
-            {getDisplayLabel(projectStatusLabels, project.status)}
-          </span>
-        </div>
-        <h1 className="text-3xl font-bold">{project.title}</h1>
-        <p className="muted mt-3">{project.reason}</p>
-        <p className="mt-3 text-sm text-ink/80">{project.desired_outcome}</p>
-        <form className="mt-4 flex flex-wrap gap-2">
-          {["ACTIVE", "WAITING", "PAUSED", "COMPLETED", "ABANDONED"].map(
-            (status) => (
-              <ActionButton
-                key={status}
-                className="btn-secondary"
-                formAction={updateProjectStatus.bind(null, project.id, status)}
-                pendingLabel="변경 중"
-              >
-                {getDisplayLabel(projectStatusLabels, status)}
-              </ActionButton>
-            )
-          )}
-        </form>
-      </header>
+  return <div className="grid gap-6">
+    <header className="panel grid gap-4"><div className="flex flex-wrap items-start justify-between gap-3"><div><div className="mb-2 flex flex-wrap gap-2"><span className="status-pill">{getDisplayLabel(projectStatusLabels, project.status)}</span>{project.target_date ? <span className="status-pill">목표일 {project.target_date}</span> : <span className="status-pill">목표일 없음</span>}</div><h1 className="text-3xl font-bold">{project.title}</h1><p className="muted mt-2">{project.goal ?? project.description ?? "목표를 추가해 프로젝트의 방향을 선명하게 만드세요."}</p></div><div className="min-w-28 text-right"><p className="text-2xl font-bold">{progress.percentage}%</p><p className="muted">전체 진행률</p></div></div><div className="h-2 overflow-hidden rounded-full bg-line"><div className="h-full bg-moss" style={{ width: `${progress.percentage}%` }} /></div><nav aria-label="프로젝트 상세 탐색" className="flex flex-wrap gap-2 border-t border-line pt-4"><a href="#overview" className="btn-secondary">개요</a><a href="#plan" className="btn-secondary">계획</a><a href="#calendar" className="btn-secondary">캘린더</a><a href="#records" className="btn-secondary">기록</a></nav></header>
 
-      {["ACTIVE", "WAITING", "PAUSED"].includes(project.status) ? (
-        <section className="panel">
-          <h2 className="mb-1 text-lg font-semibold">최상위 활동 추가</h2>
-          <p className="muted mb-3">
-            하위 활동은 각 활동의 상세 화면에서 추가할 수 있습니다.
-          </p>
-          <form action={createActionItem} className="grid gap-3">
-            <input type="hidden" name="projectId" value={project.id} />
-            <input type="hidden" name="parentActionId" value="" />
-            <input
-              className="field"
-              name="title"
-              placeholder="새 활동 제목"
-              maxLength={160}
-              required
-            />
-            <textarea
-              className="field min-h-20"
-              name="description"
-              placeholder="활동 내용"
-              maxLength={1000}
-            />
-            <input
-              className="field"
-              name="estimatedMinutes"
-              type="number"
-              min="1"
-              max="480"
-              defaultValue="30"
-              aria-label="예상 분"
-            />
-            <ActionButton className="btn-primary" pendingLabel="저장 중">
-              활동 저장
-            </ActionButton>
-          </form>
-        </section>
-      ) : null}
+    <section className="panel grid gap-3" aria-labelledby="next-action"><div className="flex flex-wrap items-start justify-between gap-3"><div><h2 id="next-action" className="text-lg font-semibold">다음 행동</h2>{nextAction ? <><p className="mt-2 text-xl font-bold">{nextAction.title}</p><p className="muted mt-1">{nextAction.scheduled_date ? `${nextAction.scheduled_date}${nextAction.scheduled_time ? ` ${nextAction.scheduled_time.slice(0, 5)}` : ""}` : nextAction.due_date ? `마감 ${nextAction.due_date}` : "아직 일정에 배치되지 않음"} · {nextAction.estimated_minutes}분</p>{!currentNextAction ? <p className="muted mt-1">완료되지 않은 말단 활동을 추천했습니다. 필요하면 아래 계획에서 바꿀 수 있습니다.</p> : null}</> : <p className="muted mt-2">다음 행동이 없습니다. 작고 바로 시작할 수 있는 활동을 추가해보세요.</p>}</div>{nextAction ? <div className="flex flex-wrap gap-2"><form action={updateActionCompletion.bind(null, nextAction.id, project.id, true)}><ActionButton className="btn-primary" pendingLabel="완료 중"><CheckCircle2 size={18} /> 완료</ActionButton></form><a href="#calendar" className="btn-secondary"><CalendarPlus size={18} /> 일정 배치</a></div> : null}</div></section>
 
-      <section className="panel grid gap-3">
-        <div>
-          <h2 className="text-lg font-semibold">활동 목록</h2>
-          <p className="muted mt-1">
-            화살표로 하위 활동을 접거나 펼칠 수 있습니다.
-          </p>
-        </div>
-        <ActionTree projectId={project.id} actions={actions} />
-      </section>
-    </div>
-  );
+    <section id="overview" className="grid gap-3 scroll-mt-5"><div><h2 className="text-xl font-bold">개요</h2><p className="muted mt-1">목표와 완료 기준, 프로젝트 상태를 관리합니다.</p></div>{gaps.length > 0 ? <div className="flex flex-wrap gap-2">{gaps.map((gap) => <span className="status-pill" key={gap}>{gap}</span>)}</div> : null}<div className="grid gap-3 md:grid-cols-2"><article className="panel"><h3 className="label">목표</h3><p className="mt-2 whitespace-pre-wrap">{project.goal ?? "아직 설정하지 않았습니다."}</p></article><article className="panel"><h3 className="label">완료 기준</h3><p className="mt-2 whitespace-pre-wrap">{project.completion_criteria ?? "아직 설정하지 않았습니다."}</p></article></div><details className="panel"><summary className="cursor-pointer font-semibold">프로젝트 정보 수정</summary><form action={updateProject} className="mt-4 grid gap-3"><input type="hidden" name="id" value={project.id} /><label className="grid gap-1"><span className="label">제목</span><input className="field" name="title" defaultValue={project.title} required /></label><label className="grid gap-1"><span className="label">설명</span><textarea className="field min-h-20" name="description" defaultValue={project.description ?? ""} /></label><div className="grid gap-3 sm:grid-cols-2"><label className="grid gap-1"><span className="label">목표</span><textarea className="field min-h-24" name="goal" defaultValue={project.goal ?? ""} /></label><label className="grid gap-1"><span className="label">완료 기준</span><textarea className="field min-h-24" name="completionCriteria" defaultValue={project.completion_criteria ?? ""} /></label></div><div className="grid gap-3 sm:grid-cols-3"><label className="grid gap-1"><span className="label">시작일</span><input className="field" name="startedDate" type="date" defaultValue={project.started_at?.slice(0, 10) ?? ""} /></label><label className="grid gap-1"><span className="label">목표일</span><input className="field" name="targetDate" type="date" defaultValue={project.target_date ?? ""} /></label><label className="grid gap-1"><span className="label">상태</span><select className="field" name="status" defaultValue={project.status}>{editableStatuses.map((status) => <option key={status} value={status}>{getDisplayLabel(projectStatusLabels, status)}</option>)}</select></label></div><ActionButton className="btn-primary w-fit" pendingLabel="저장 중">변경 저장</ActionButton></form></details></section>
+
+    <section id="plan" className="grid gap-4 scroll-mt-5"><div><h2 className="text-xl font-bold">계획</h2><p className="muted mt-1">단계와 활동을 계층으로 나누고, 현재 다음 행동을 하나 고릅니다.</p></div>{canPlan ? <section className="panel"><h3 className="font-semibold">최상위 단계 또는 활동 추가</h3><form action={createActionItem} className="mt-3 grid gap-3"><input type="hidden" name="projectId" value={project.id} /><input type="hidden" name="parentActionId" value="" /><div className="grid gap-3 sm:grid-cols-[1fr_160px]"><input className="field" name="title" placeholder="예: 학습 환경 준비" required maxLength={160} /><select className="field" name="status" defaultValue="TODO"><option value="TODO">할 일</option><option value="IN_PROGRESS">진행 중</option><option value="WAITING">대기</option></select></div><textarea className="field min-h-20" name="description" placeholder="설명 (선택)" /><input className="field" name="estimatedMinutes" type="number" min="1" max="480" defaultValue="30" aria-label="예상 시간(분)" /><label className="flex items-center gap-2 text-sm font-semibold"><input name="isStage" type="checkbox" /> 큰 단계로 만들기</label><input type="hidden" name="dueDate" value="" /><input type="hidden" name="scheduledDate" value="" /><input type="hidden" name="scheduledTime" value="" /><input type="hidden" name="scheduledEndTime" value="" /><input type="hidden" name="isAllDay" value="on" /><ActionButton className="btn-primary w-fit" pendingLabel="추가 중"><Plus size={18} /> 활동 추가</ActionButton></form></section> : null}<section className="panel grid gap-3"><ActionTree projectId={project.id} actions={actions} nextActionId={project.next_action_id} /><div className="border-t border-line pt-4"><h3 className="mb-3 font-semibold">다음 행동 지정</h3><div className="flex flex-wrap gap-2">{actions.filter((action) => !action.is_stage && !["DONE", "SKIPPED", "CANCELED"].includes(action.status)).map((action) => <form key={action.id} action={setNextAction.bind(null, project.id, action.id)}><ActionButton className={action.id === project.next_action_id ? "btn-primary" : "btn-secondary"} pendingLabel="지정 중">{action.title}</ActionButton></form>)}</div></div></section></section>
+
+    <section className="grid gap-3"><div className="flex items-center gap-2"><Flag size={20} /><h2 className="text-xl font-bold">마일스톤</h2></div><section className="panel grid gap-3">{milestones.map((milestone) => <article className="flex flex-col gap-2 rounded-md border border-line p-3 sm:flex-row sm:items-center sm:justify-between" key={milestone.id}><div><p className={`font-semibold ${milestone.completed_at ? "line-through text-ink/60" : ""}`}>{milestone.title}</p><p className="muted">{milestone.target_date ?? "목표일 없음"}{milestone.description ? ` · ${milestone.description}` : ""}</p></div><div className="flex gap-2"><form action={toggleMilestone.bind(null, milestone.id, project.id, !milestone.completed_at)}><ActionButton className="btn-secondary" pendingLabel="변경 중">{milestone.completed_at ? "되돌리기" : "완료"}</ActionButton></form><form action={deleteMilestone.bind(null, milestone.id, project.id)}><ActionButton className="btn-secondary" pendingLabel="삭제 중">삭제</ActionButton></form></div></article>)}{milestones.length === 0 ? <p className="muted">아직 마일스톤이 없습니다.</p> : null}<form action={saveMilestone} className="grid gap-2 border-t border-line pt-4 sm:grid-cols-2"><input type="hidden" name="projectId" value={project.id} /><input type="hidden" name="sortOrder" value={milestones.length} /><input className="field" name="title" placeholder="새 마일스톤" required /><input className="field" name="targetDate" type="date" aria-label="마일스톤 목표일" /><textarea className="field min-h-20 sm:col-span-2" name="description" placeholder="설명 (선택)" /><select className="field sm:col-span-2" name="actionItemId" defaultValue=""><option value="">연결 활동 없음</option>{actions.filter((action) => !action.is_stage).map((action) => <option key={action.id} value={action.id}>{action.title}</option>)}</select><ActionButton className="btn-primary w-fit" pendingLabel="저장 중">마일스톤 추가</ActionButton></form></section></section>
+
+    <section id="calendar" className="grid gap-3 scroll-mt-5"><div><h2 className="text-xl font-bold">프로젝트 캘린더</h2><p className="muted mt-1">이 프로젝트의 활동만 날짜와 시간에 배치합니다.</p></div><section className="panel grid gap-3">{scheduledActions.map((action) => <article className="flex flex-col gap-2 rounded-md border border-line p-3 sm:flex-row sm:items-center sm:justify-between" key={action.id}><div><p className="font-semibold">{action.scheduled_date} {action.scheduled_time?.slice(0, 5) ?? "종일"} — {action.title}</p><p className="muted">{action.estimated_minutes}분{action.due_date ? ` · 마감 ${action.due_date}` : ""}</p></div><a className="btn-secondary" href={`/projects/${project.id}/actions/${action.id}`}>일정 수정</a></article>)}{scheduledActions.length === 0 ? <p className="muted">아직 배치된 활동이 없습니다. 활동 상세에서 예정 날짜와 시간을 설정하세요.</p> : null}</section></section>
+
+    <section id="records" className="grid gap-3 scroll-mt-5"><div><h2 className="text-xl font-bold">기록</h2><p className="muted mt-1">진행 메모와 완료·변경 이력을 최신순으로 보여줍니다.</p></div><section className="panel grid gap-3"><form action={saveProjectNote} className="grid gap-2"><input type="hidden" name="projectId" value={project.id} /><textarea className="field min-h-24" name="content" placeholder="프로젝트 진행 메모" required maxLength={4000} /><ActionButton className="btn-primary w-fit" pendingLabel="저장 중">메모 추가</ActionButton></form>{records.map((record) => <article key={record.id} className="border-t border-line pt-3"><div className="flex flex-wrap items-start justify-between gap-2"><div><p className="whitespace-pre-wrap">{record.content}</p><p className="muted mt-1">{record.is_system ? "시스템 기록" : "메모"} · {new Intl.DateTimeFormat("ko-KR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(record.created_at))}</p></div>{!record.is_system ? <form action={deleteProjectNote.bind(null, record.id, project.id)}><ActionButton className="btn-secondary" pendingLabel="삭제 중">삭제</ActionButton></form> : null}</div></article>)}{records.length === 0 ? <p className="muted">아직 기록이 없습니다.</p> : null}</section></section>
+
+    {project.status !== "ARCHIVED" ? <section className="flex justify-end"><form action={updateProjectStatus.bind(null, project.id, "ARCHIVED")}><ActionButton className="btn-secondary" pendingLabel="보관 중"><Archive size={18} /> 프로젝트 보관</ActionButton></form></section> : null}
+  </div>;
 }
