@@ -6,6 +6,10 @@ export const inboxSchema = z.object({
   category: z.string().default("ETC")
 });
 
+export const inboxUpdateSchema = inboxSchema.extend({
+  id: z.string().uuid()
+});
+
 export const projectConversionSchema = z.object({
   inboxId: z.string().uuid(),
   title: z.string().trim().min(1).max(160),
@@ -14,7 +18,7 @@ export const projectConversionSchema = z.object({
   activateNow: z.coerce.boolean().default(false)
 });
 
-export const actionSchema = z.object({
+const actionBaseSchema = z.object({
   projectId: z.string().uuid(),
   parentActionId: z.preprocess(
     (value) => (value === "" || value === null ? undefined : value),
@@ -22,11 +26,80 @@ export const actionSchema = z.object({
   ),
   title: z.string().trim().min(1).max(160),
   description: z.string().trim().max(1000).optional(),
-  estimatedMinutes: z.coerce.number().int().positive().max(480).default(30)
+  estimatedMinutes: z.coerce.number().int().positive().max(480).default(30),
+  status: z.enum(["TODO", "PLANNED", "IN_PROGRESS", "WAITING", "DONE", "SKIPPED", "CANCELED"]).default("TODO"),
+  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  startedDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  scheduledDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  scheduledTime: z.string().regex(/^\d{2}:\d{2}$/).optional().or(z.literal("")),
+  scheduledEndTime: z.string().regex(/^\d{2}:\d{2}$/).optional().or(z.literal("")),
+  isAllDay: z.coerce.boolean().default(true),
+  isStage: z.coerce.boolean().default(false),
+  actualMinutes: z.preprocess((value) => (value === "" || value === null ? undefined : value), z.coerce.number().int().min(0).max(1440).optional())
 });
 
-export const actionUpdateSchema = actionSchema.extend({
+function validateActionSchedule(value: z.infer<typeof actionBaseSchema>, context: z.RefinementCtx) {
+  if (value.scheduledTime && value.scheduledEndTime && value.scheduledEndTime <= value.scheduledTime) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: "종료 시간은 시작 시간 이후여야 합니다.", path: ["scheduledEndTime"] });
+  }
+}
+
+export const actionSchema = actionBaseSchema.superRefine(validateActionSchedule);
+
+export const actionUpdateSchema = actionBaseSchema.extend({
   actionId: z.string().uuid()
+}).superRefine(validateActionSchedule);
+
+const optionalDate = z.preprocess(
+  (value) => (value === "" || value === null ? undefined : value),
+  z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()
+);
+
+const projectPlanBaseSchema = z.object({
+    sourceInboxId: z.preprocess((value) => (value === "" || value === null ? undefined : value), z.string().uuid().optional()),
+    title: z.string().trim().min(1, "프로젝트 제목을 입력하세요.").max(160),
+    description: z.string().trim().max(2000).optional(),
+    goal: z.string().trim().max(2000).optional(),
+    completionCriteria: z.string().trim().max(2000).optional(),
+    startedDate: optionalDate,
+    targetDate: optionalDate,
+    status: z.enum(["DRAFT", "ACTIVE", "WAITING", "PAUSED", "COMPLETED", "ABANDONED", "ARCHIVED"]).default("DRAFT"),
+    stages: z.array(z.string().trim().max(160)).max(20).default([]),
+    firstActionTitle: z.string().trim().max(160).optional()
+  });
+
+function validateProjectDates(value: { startedDate?: string; targetDate?: string }, context: z.RefinementCtx) {
+    if (value.startedDate && value.targetDate && value.targetDate < value.startedDate) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: "목표 완료일은 시작일보다 빠를 수 없습니다.", path: ["targetDate"] });
+    }
+}
+
+export const projectPlanSchema = projectPlanBaseSchema.superRefine(validateProjectDates);
+
+export const projectUpdateSchema = projectPlanBaseSchema.pick({
+  title: true,
+  description: true,
+  goal: true,
+  completionCriteria: true,
+  startedDate: true,
+  targetDate: true,
+  status: true
+}).extend({ id: z.string().uuid() }).superRefine(validateProjectDates);
+
+export const milestoneSchema = z.object({
+  id: z.string().uuid().optional(),
+  projectId: z.string().uuid(),
+  actionItemId: z.preprocess((value) => (value === "" || value === null ? undefined : value), z.string().uuid().optional()),
+  title: z.string().trim().min(1).max(160),
+  description: z.string().trim().max(1000).optional(),
+  targetDate: optionalDate,
+  sortOrder: z.coerce.number().int().min(0).default(0)
+});
+
+export const projectRecordSchema = z.object({
+  id: z.string().uuid().optional(),
+  projectId: z.string().uuid(),
+  content: z.string().trim().min(1).max(4000)
 });
 
 export const dailyPlanSchema = z.object({

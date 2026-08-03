@@ -5,6 +5,8 @@ import { ActionButton } from "@/components/action-button";
 import { ActionTree } from "@/components/action-tree";
 import {
   createActionItem,
+  deleteActionItem,
+  setNextAction,
   updateActionCompletion,
   updateActionItem
 } from "@/features/projects/actions";
@@ -229,11 +231,32 @@ export default async function ActionDetailPage({
                 defaultValue={action.estimated_minutes}
               />
             </label>
+            <label className="grid gap-1">
+              <span className="label">상태</span>
+              <select className="field" name="status" defaultValue={action.status}>
+                {[["TODO", "할 일"], ["PLANNED", "계획됨"], ["IN_PROGRESS", "진행 중"], ["WAITING", "대기"], ["DONE", "완료"], ["SKIPPED", "건너뜀"], ["CANCELED", "취소"]].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </select>
+            </label>
+          </div>
+          <div className="grid gap-3 rounded-md border border-line bg-paper p-3 sm:grid-cols-2">
+            <label className="grid gap-1"><span className="label">시작일</span><input className="field" name="startedDate" type="date" defaultValue={action.started_date ?? ""} /></label>
+            <label className="grid gap-1"><span className="label">예정 날짜</span><input className="field" name="scheduledDate" type="date" defaultValue={action.scheduled_date ?? ""} /></label>
+            <label className="grid gap-1"><span className="label">마감일</span><input className="field" name="dueDate" type="date" defaultValue={action.due_date ?? ""} /></label>
+            <label className="grid gap-1"><span className="label">시작 시간</span><input className="field" name="scheduledTime" type="time" defaultValue={action.scheduled_time?.slice(0, 5) ?? ""} /></label>
+            <label className="grid gap-1"><span className="label">종료 시간</span><input className="field" name="scheduledEndTime" type="time" defaultValue={action.scheduled_end_time?.slice(0, 5) ?? ""} /></label>
+            <label className="grid gap-1"><span className="label">실제 소요 시간(분)</span><input className="field" name="actualMinutes" type="number" min="0" max="1440" defaultValue={action.actual_minutes ?? ""} /></label>
+            <label className="flex items-center gap-2 text-sm font-semibold sm:col-span-2"><input name="isAllDay" type="checkbox" defaultChecked={action.is_all_day} /> 종일 일정</label>
           </div>
           <ActionButton className="btn-primary" pendingLabel="저장 중">
             변경 저장
           </ActionButton>
         </form>
+      </section>
+
+      <section className="panel grid gap-3">
+        <h2 className="text-lg font-semibold">다음 행동과 삭제</h2>
+        <div className="flex flex-wrap gap-2"><form action={setNextAction.bind(null, project.id, action.id)}><ActionButton className="btn-secondary" pendingLabel="지정 중">다음 행동으로 지정</ActionButton></form><form action={deleteActionItem.bind(null, action.id, project.id, "REPARENT")}><ActionButton className="btn-secondary" pendingLabel="삭제 중">하위 활동을 상위로 옮기고 삭제</ActionButton></form>{progress.total > 0 ? <form action={deleteActionItem.bind(null, action.id, project.id, "CASCADE")}><ActionButton className="btn-secondary" pendingLabel="삭제 중">하위 활동도 함께 삭제</ActionButton></form> : null}</div>
+        <p className="muted">삭제는 되돌릴 수 없습니다. 하위 활동이 있으면 두 가지 처리 방식을 선택할 수 있습니다.</p>
       </section>
 
       {canAddChildren ? (
@@ -252,6 +275,14 @@ export default async function ActionDetailPage({
               maxLength={160}
               required
             />
+            <input type="hidden" name="status" value="TODO" />
+            <input type="hidden" name="dueDate" value="" />
+            <input type="hidden" name="startedDate" value="" />
+            <input type="hidden" name="scheduledDate" value="" />
+            <input type="hidden" name="scheduledTime" value="" />
+            <input type="hidden" name="scheduledEndTime" value="" />
+            <input type="hidden" name="isAllDay" value="on" />
+            <input type="hidden" name="actualMinutes" value="" />
             <textarea
               className="field min-h-20"
               name="description"

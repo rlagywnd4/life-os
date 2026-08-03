@@ -7,6 +7,7 @@ const nav = [
   { href: "/health", label: "건강", icon: HeartPulse },
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/projects", label: "프로젝트", icon: FolderKanban },
+  { href: "/calendar", label: "캘린더", icon: CalendarDays },
   { href: "/today", label: "오늘", icon: CalendarDays },
   { href: "/weekly-review", label: "주간 리뷰", icon: Sparkles },
   { href: "/history", label: "기록", icon: History },

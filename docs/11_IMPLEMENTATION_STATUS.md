@@ -22,8 +22,9 @@
 | ----------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Product Constitution                      | Done    | PRD 원문과 Constitution v1 문서 구조가 저장소에 있음.                                                                                                                       |
 | Auth                                      | Partial | Supabase Auth 기반 로그인/회원가입/비밀번호 재설정 흐름 있음. 실제 환경 검증은 Supabase 설정 필요.                                                                          |
-| Capture / Inbox                           | Partial | 빠른 Inbox 등록, 검색/필터, Project/Someday 전환 흐름 있음. 주요 액션은 클릭/제출 중 피드백을 표시함.                                                                       |
-| Projects                                  | Partial | 프로젝트와 계층형 활동 관리 흐름 있음. 활동 트리, 상세 편집, 부모 이동, 하위 진행률과 수동 완료 제안을 프로덕션 임시 계정으로 검증함. 실제 사용자 피드백 필요.              |
+| Capture / Inbox                           | Partial | 빠른 등록, 미처리 전용 목록, 검색·카테고리 필터, 수정·보관·삭제·일정 전환과 트랜잭션 기반 프로젝트 전환을 구현함. 운영 Supabase migration 적용과 실제 사용자 흐름 확인이 남음. |
+| Projects                                  | Partial | 목표·완료 기준·기간·초안·단계·다음 행동·말단 활동 진행률·마일스톤·기록·계층 활동과 프로젝트 일정 화면을 구현함. 운영 DB 적용 및 실제 사용자 흐름 확인이 남음.              |
+| Calendar                                  | Partial | 일반 일정 CRUD와 프로젝트 활동 일정 목록을 웹에 추가함. 월/주간 시각화, 반복 일정과 운영 DB 검증은 후속 작업임.                                                           |
 | Today                                     | Partial | 에너지/모드/핵심 행동 선택 흐름 있음. 주요 액션은 클릭/제출 중 피드백을 표시함.                                                                                             |
 | Weekly Review                             | Partial | 주간 리뷰 기본 흐름 있음.                                                                                                                                                   |
 | Health & Diet MVP                         | Partial | 프로필, 체크인, 체중 목표, 운동/리포트 화면 기본 구현 있음. 저장/삭제 액션은 클릭/제출 중 피드백을 표시함. 실제 사용 피드백 필요.                                           |
@@ -35,11 +36,13 @@
 
 ## Next Recommended Work
 
-1. iPhone·Mac 공용 SwiftUI 프로젝트의 V1 범위와 기존 Supabase 직접 연동 방식을 구체화.
-2. 양 기기에서 Inbox 조회·추가·수정·삭제 흐름을 구현.
-3. V1 사용 후 AI 생각 정리 기능의 실제 입력 범위와 승인 UX를 검토.
+1. 운영 Supabase에 2026-08-03 프로젝트 계획 migration을 적용하고 Inbox→프로젝트→일정→완료 흐름을 실제 계정으로 확인한다.
+2. 웹 캘린더의 월/주간 보기와 반복 일정 정책을 결정한다.
+3. 네이티브 앱에 프로젝트 계획 데이터 모델과 화면을 동기화한다.
 
 ## Recent Handoffs
+
+- [2026-08-03 Inbox Project Planning](./handoffs/2026-08-03-inbox-project-planning.md)
 
 - [2026-07-17 Production Deployment Smoke Test](./handoffs/2026-07-17-production-deployment-smoke-test.md)
 - [2026-07-17 Supabase Migration History Repair](./handoffs/2026-07-17-supabase-migration-history-repair.md)
